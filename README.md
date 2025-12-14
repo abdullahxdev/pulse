@@ -290,8 +290,7 @@ npm run lint
 
 ## 📸 Screenshots
 
-> Add screenshots of your app here after running it!
-
+c:\Users\abdul\OneDrive\Pictures\Screenshots\Screenshot 2025-12-13 192102.png c:\Users\abdul\OneDrive\Pictures\Screenshots\Screenshot 2025-12-13 192024.png
 ---
 
 ## 🐛 Troubleshooting
