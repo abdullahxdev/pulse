@@ -290,7 +290,7 @@ npm run lint
 
 ## 📸 Screenshots
 
-c:\Users\abdul\OneDrive\Pictures\Screenshots\Screenshot 2025-12-13 192102.png c:\Users\abdul\OneDrive\Pictures\Screenshots\Screenshot 2025-12-13 192024.png
+![alt text](<Screenshot 2025-12-13 192102.png>) ![alt text](<Screenshot 2025-12-13 192024.png>)
 ---
 
 ## 🐛 Troubleshooting
