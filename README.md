@@ -289,8 +289,9 @@ npm run lint
 ---
 
 ## 📸 Screenshots
+<img width="1920" height="1080" alt="Screenshot 2025-12-13 192102" src="https://github.com/user-attachments/assets/ab1dbd56-7341-4903-aef2-6e3a8cd640ee" />
+<img width="1920" height="1080" alt="Screenshot 2025-12-13 192102" src="https://github.com/user-attachments/assets/286995f9-d767-42b9-a328-410117a2b422" />
 
-![alt text](<Screenshot 2025-12-13 192102.png>) ![alt text](<Screenshot 2025-12-13 192024.png>)
 ---
 
 ## 🐛 Troubleshooting
