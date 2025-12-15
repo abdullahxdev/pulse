@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Search, Bell, MessageCircle, LogOut } from 'lucide-react';
 
-const Navbar = ({ user, notificationCount = 0, messageCount = 0 }) => {
+const Navbar = ({ user, notificationCount = 0, messageCount = 0, onLogout }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    if (onLogout) {
+      onLogout(); // Call parent's logout handler
+    }
   };
 
   const handleSearch = (e) => {
