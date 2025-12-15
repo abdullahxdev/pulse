@@ -40,6 +40,13 @@ function App() {
     setCurrentUser(user);
   };
 
+  // Handle logout - clear user state
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setCurrentUser(null); // This triggers re-render and shows login page
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-bg flex items-center justify-center">
@@ -56,7 +63,8 @@ function App() {
             <Navbar 
               user={currentUser} 
               notificationCount={2} 
-              messageCount={1} 
+              messageCount={1}
+              onLogout={handleLogout}
             />
             <div className="flex min-h-screen pt-[60px]">
               <Sidebar user={currentUser} />
@@ -69,7 +77,7 @@ function App() {
                   <Route path="/explore" element={<Explore currentUser={currentUser} />} />
                   <Route path="/trending" element={<Trending currentUser={currentUser} />} />
                   <Route path="/saved" element={<Saved currentUser={currentUser} />} />
-                  <Route path="/settings" element={<Settings currentUser={currentUser} />} />
+                  <Route path="/settings" element={<Settings currentUser={currentUser} onLogout={handleLogout} />} />
                   <Route path="*" element={<Navigate to="/home" replace />} />
                 </Routes>
               </main>
