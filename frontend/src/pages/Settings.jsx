@@ -1,9 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Settings as SettingsIcon, User, Bell, Lock, Eye, Shield, HelpCircle, LogOut } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 
-const Settings = ({ currentUser }) => {
-  const navigate = useNavigate();
+const Settings = ({ currentUser, onLogout }) => {
   const [activeSection, setActiveSection] = useState('account');
 
   // Form states
@@ -28,15 +26,68 @@ const Settings = ({ currentUser }) => {
     showActivity: true
   });
 
+  const [theme, setTheme] = useState('Dark');
+
+  // Load saved settings from localStorage
+  useEffect(() => {
+    const savedNotifications = localStorage.getItem('notificationSettings');
+    const savedPrivacy = localStorage.getItem('privacySettings');
+    const savedTheme = localStorage.getItem('theme');
+
+    if (savedNotifications) {
+      setNotificationSettings(JSON.parse(savedNotifications));
+    }
+    if (savedPrivacy) {
+      setPrivacySettings(JSON.parse(savedPrivacy));
+    }
+    if (savedTheme) {
+      setTheme(savedTheme);
+    }
+  }, []);
+
   const handleSaveAccount = (e) => {
     e.preventDefault();
-    alert('Account settings saved! (Mock function)');
+    
+    // Update user in localStorage
+    const updatedUser = {
+      ...currentUser,
+      username: accountData.username,
+      email: accountData.email,
+      profile_info: accountData.bio
+    };
+    
+    localStorage.setItem('user', JSON.stringify(updatedUser));
+    
+    alert('Account settings saved! Please refresh the page to see changes.');
+  };
+
+  const handleNotificationToggle = (key) => {
+    const updated = {...notificationSettings, [key]: !notificationSettings[key]};
+    setNotificationSettings(updated);
+    localStorage.setItem('notificationSettings', JSON.stringify(updated));
+  };
+
+  const handlePrivacyToggle = (key) => {
+    const updated = {...privacySettings, [key]: !privacySettings[key]};
+    setPrivacySettings(updated);
+    localStorage.setItem('privacySettings', JSON.stringify(updated));
+  };
+
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    if (newTheme === 'Light') {
+      alert('Light theme will be available when backend is ready! 🌞');
+    } else if (newTheme === 'Auto') {
+      alert('Auto theme will sync with your system preferences when backend is ready! 🌓');
+    }
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    navigate('/login');
+    if (onLogout) {
+      onLogout();
+    }
   };
 
   const sections = [
@@ -147,13 +198,16 @@ const Settings = ({ currentUser }) => {
                     />
                   </div>
 
-                  <div className="pt-4">
+                  <div className="pt-4 flex gap-3">
                     <button
                       type="submit"
                       className="px-6 py-3 bg-primary text-white font-medium rounded-lg hover:bg-primary-hover transition-colors"
                     >
                       Save Changes
                     </button>
+                    <span className="text-xs text-slate-400 flex items-center">
+                      💡 Changes are saved locally. Full profile update will work with backend.
+                    </span>
                   </div>
                 </form>
               </div>
@@ -165,6 +219,9 @@ const Settings = ({ currentUser }) => {
                 <h2 className="text-xl font-semibold text-slate-50 mb-4">
                   Notification Settings
                 </h2>
+                <p className="text-sm text-slate-400 mb-4">
+                  Settings are saved automatically ✅
+                </p>
                 <div className="space-y-4">
                   {Object.entries(notificationSettings).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between p-4 bg-dark-bg rounded-lg">
@@ -177,7 +234,7 @@ const Settings = ({ currentUser }) => {
                         </p>
                       </div>
                       <button
-                        onClick={() => setNotificationSettings({...notificationSettings, [key]: !value})}
+                        onClick={() => handleNotificationToggle(key)}
                         className={`relative w-12 h-6 rounded-full transition-colors ${
                           value ? 'bg-primary' : 'bg-dark-border'
                         }`}
@@ -198,6 +255,9 @@ const Settings = ({ currentUser }) => {
                 <h2 className="text-xl font-semibold text-slate-50 mb-4">
                   Privacy & Security
                 </h2>
+                <p className="text-sm text-slate-400 mb-4">
+                  Settings are saved automatically ✅
+                </p>
                 <div className="space-y-4">
                   {Object.entries(privacySettings).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between p-4 bg-dark-bg rounded-lg">
@@ -213,7 +273,7 @@ const Settings = ({ currentUser }) => {
                         </p>
                       </div>
                       <button
-                        onClick={() => setPrivacySettings({...privacySettings, [key]: !value})}
+                        onClick={() => handlePrivacyToggle(key)}
                         className={`relative w-12 h-6 rounded-full transition-colors ${
                           value ? 'bg-primary' : 'bg-dark-border'
                         }`}
@@ -226,13 +286,22 @@ const Settings = ({ currentUser }) => {
                   ))}
 
                   <div className="pt-4 space-y-3">
-                    <button className="w-full py-3 px-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm font-medium hover:bg-dark-border transition-colors text-left">
+                    <button 
+                      onClick={() => alert('Password change will work with backend 🔐')}
+                      className="w-full py-3 px-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm font-medium hover:bg-dark-border transition-colors text-left"
+                    >
                       Change Password
                     </button>
-                    <button className="w-full py-3 px-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm font-medium hover:bg-dark-border transition-colors text-left">
+                    <button 
+                      onClick={() => alert('Two-factor authentication will work with backend 🔒')}
+                      className="w-full py-3 px-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm font-medium hover:bg-dark-border transition-colors text-left"
+                    >
                       Two-Factor Authentication
                     </button>
-                    <button className="w-full py-3 px-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm font-medium hover:bg-red-500/20 transition-colors text-left">
+                    <button 
+                      onClick={() => alert('Account deletion will work with backend ⚠️')}
+                      className="w-full py-3 px-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500 text-sm font-medium hover:bg-red-500/20 transition-colors text-left"
+                    >
                       Delete Account
                     </button>
                   </div>
@@ -250,19 +319,24 @@ const Settings = ({ currentUser }) => {
                   <div className="p-4 bg-dark-bg rounded-lg">
                     <h3 className="text-sm font-medium text-slate-50 mb-3">Theme</h3>
                     <div className="grid grid-cols-3 gap-3">
-                      {['Dark', 'Light', 'Auto'].map((theme) => (
+                      {['Dark', 'Light', 'Auto'].map((themeOption) => (
                         <button
-                          key={theme}
+                          key={themeOption}
+                          onClick={() => handleThemeChange(themeOption)}
                           className={`p-4 rounded-lg border-2 transition-all ${
-                            theme === 'Dark'
+                            theme === themeOption
                               ? 'border-primary bg-primary/10'
                               : 'border-dark-border hover:border-dark-hover'
                           }`}
                         >
-                          <div className="text-sm font-medium text-slate-50">{theme}</div>
+                          <div className="text-sm font-medium text-slate-50">{themeOption}</div>
+                          {themeOption === 'Dark' && <div className="text-xs text-slate-400 mt-1">Current</div>}
                         </button>
                       ))}
                     </div>
+                    <p className="text-xs text-slate-400 mt-3">
+                      💡 Light and Auto themes will be available with backend integration
+                    </p>
                   </div>
 
                   <div className="p-4 bg-dark-bg rounded-lg">
@@ -272,12 +346,15 @@ const Settings = ({ currentUser }) => {
                       min="12"
                       max="18"
                       defaultValue="14"
-                      className="w-full"
+                      className="w-full accent-primary"
                     />
                     <div className="flex justify-between text-xs text-slate-400 mt-2">
                       <span>Small</span>
                       <span>Large</span>
                     </div>
+                    <p className="text-xs text-slate-400 mt-3">
+                      💡 Font size control will work with backend
+                    </p>
                   </div>
                 </div>
               </div>
@@ -290,19 +367,31 @@ const Settings = ({ currentUser }) => {
                   Help & Support
                 </h2>
                 <div className="space-y-3">
-                  <button className="w-full p-4 bg-dark-bg rounded-lg text-left hover:bg-dark-border transition-colors">
+                  <button 
+                    onClick={() => alert('FAQ section coming soon!')}
+                    className="w-full p-4 bg-dark-bg rounded-lg text-left hover:bg-dark-border transition-colors"
+                  >
                     <h3 className="text-sm font-medium text-slate-50 mb-1">FAQ</h3>
                     <p className="text-xs text-slate-400">Find answers to common questions</p>
                   </button>
-                  <button className="w-full p-4 bg-dark-bg rounded-lg text-left hover:bg-dark-border transition-colors">
+                  <button 
+                    onClick={() => alert('Support system will be available with backend!')}
+                    className="w-full p-4 bg-dark-bg rounded-lg text-left hover:bg-dark-border transition-colors"
+                  >
                     <h3 className="text-sm font-medium text-slate-50 mb-1">Contact Support</h3>
                     <p className="text-xs text-slate-400">Get help from our support team</p>
                   </button>
-                  <button className="w-full p-4 bg-dark-bg rounded-lg text-left hover:bg-dark-border transition-colors">
+                  <button 
+                    onClick={() => alert('Problem reporting will work with backend!')}
+                    className="w-full p-4 bg-dark-bg rounded-lg text-left hover:bg-dark-border transition-colors"
+                  >
                     <h3 className="text-sm font-medium text-slate-50 mb-1">Report a Problem</h3>
                     <p className="text-xs text-slate-400">Let us know about issues you're experiencing</p>
                   </button>
-                  <button className="w-full p-4 bg-dark-bg rounded-lg text-left hover:bg-dark-border transition-colors">
+                  <button 
+                    onClick={() => alert('Pulse v1.0 - Built with React + Vite + Tailwind CSS 💙')}
+                    className="w-full p-4 bg-dark-bg rounded-lg text-left hover:bg-dark-border transition-colors"
+                  >
                     <h3 className="text-sm font-medium text-slate-50 mb-1">About Pulse</h3>
                     <p className="text-xs text-slate-400">Learn more about our platform</p>
                   </button>
