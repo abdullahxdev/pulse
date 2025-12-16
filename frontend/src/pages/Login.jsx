@@ -36,16 +36,39 @@ const Login = ({ onLogin }) => {
         response = await register(formData.username, formData.email, formData.password);
       }
 
+      console.log('📦 Response received:', response);
+
       if (response.success) {
+        console.log('✅ Saving to localStorage...');
+        console.log('Token:', response.token);
+        console.log('User:', response.user);
+        
+        // Save token and user
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
-        if (onLogin) onLogin(response.user);
+        
+        // Verify it was saved
+        const savedToken = localStorage.getItem('token');
+        const savedUser = localStorage.getItem('user');
+        console.log('Verified - Token saved:', savedToken ? 'YES' : 'NO');
+        console.log('Verified - User saved:', savedUser ? 'YES' : 'NO');
+        
+        // Call parent component to update state
+        if (onLogin) {
+          console.log('🔄 Calling onLogin callback...');
+          onLogin(response.user);
+        }
+        
+        // Navigate to home
+        console.log('🚀 Navigating to /home...');
         navigate('/home');
       } else {
-        alert(response.message || 'Authentication failed');
+        // Show error message
+        console.error('❌ Authentication failed:', response.message);
+        alert(response.message || 'Authentication failed. Please check your credentials.');
       }
     } catch (error) {
-      console.error('Error:', error);
+      console.error('❌ Unexpected error:', error);
       alert('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -132,6 +155,7 @@ const Login = ({ onLogin }) => {
                     value={formData.username}
                     onChange={handleChange}
                     required
+                    minLength={3}
                     className="w-full py-3 pl-11 pr-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
@@ -171,6 +195,7 @@ const Login = ({ onLogin }) => {
                     value={formData.password}
                     onChange={handleChange}
                     required
+                    minLength={6}
                     className="w-full py-3 pl-11 pr-11 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors"
                   />
                   <button
@@ -181,6 +206,9 @@ const Login = ({ onLogin }) => {
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  {isLogin ? 'Use your username and password to login' : 'Minimum 6 characters'}
+                </p>
               </div>
 
               <button 
