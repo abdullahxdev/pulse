@@ -25,32 +25,46 @@ function App() {
       const token = localStorage.getItem('token');
       const userData = localStorage.getItem('user');
 
+      console.log('🔍 Checking auth...');
+      console.log('Token:', token ? 'exists' : 'missing');
+      console.log('User data:', userData);
+
       if (token && userData) {
         const user = JSON.parse(userData);
+        console.log('✅ User authenticated:', user);
         setCurrentUser(user);
+      } else {
+        console.log('❌ No authentication found');
       }
     } catch (error) {
-      console.error('Error checking auth:', error);
+      console.error('❌ Error checking auth:', error);
+      // Clear invalid data
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
     } finally {
       setLoading(false);
     }
   };
 
   const handleLogin = (user) => {
+    console.log('✅ Login successful:', user);
     setCurrentUser(user);
   };
 
-  // Handle logout - clear user state
   const handleLogout = () => {
+    console.log('👋 Logging out...');
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    setCurrentUser(null); // This triggers re-render and shows login page
+    setCurrentUser(null);
   };
 
   if (loading) {
     return (
       <div className="min-h-screen bg-dark-bg flex items-center justify-center">
-        <div className="text-slate-500">Loading Pulse...</div>
+        <div className="text-center">
+          <div className="text-[60px] mb-4 animate-pulse-beat">💙</div>
+          <div className="text-slate-500">Loading Pulse...</div>
+        </div>
       </div>
     );
   }
