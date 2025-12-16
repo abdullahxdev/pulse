@@ -41,10 +41,13 @@ api.interceptors.response.use(
 
 export const login = async (username, password) => {
   try {
+    console.log('🔐 Attempting login for:', username);
     const response = await api.post('/auth/login', {
       username,
       password,
     });
+    
+    console.log('✅ Login response:', response.data);
     
     return {
       success: true,
@@ -52,6 +55,7 @@ export const login = async (username, password) => {
       token: response.data.access_token,
     };
   } catch (error) {
+    console.error('❌ Login error:', error.response?.data);
     return {
       success: false,
       message: error.response?.data?.detail || 'Login failed',
@@ -61,11 +65,14 @@ export const login = async (username, password) => {
 
 export const register = async (username, email, password) => {
   try {
+    console.log('📝 Attempting registration for:', username);
     const response = await api.post('/auth/register', {
       username,
       email,
       password,
     });
+    
+    console.log('✅ Registration response:', response.data);
     
     return {
       success: true,
@@ -73,6 +80,7 @@ export const register = async (username, email, password) => {
       token: response.data.access_token,
     };
   } catch (error) {
+    console.error('❌ Registration error:', error.response?.data);
     return {
       success: false,
       message: error.response?.data?.detail || 'Registration failed',
