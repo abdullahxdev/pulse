@@ -3,8 +3,19 @@ from fastapi.middleware.cors import CORSMiddleware
 from .config import settings
 from .database import engine, Base
 
-# Import routers (we'll create these next)
-# from .routers import auth, users, posts, comments, likes, follows, messages, notifications, stories
+# Import all routers
+from .routers import (
+    auth_router,
+    users_router,
+    posts_router,
+    comments_router,
+    likes_router,
+    follows_router,
+    messages_router,
+    notifications_router,
+    stories_router,
+    hashtags_router
+)
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -13,7 +24,8 @@ Base.metadata.create_all(bind=engine)
 app = FastAPI(
     title=settings.APP_NAME,
     version=settings.APP_VERSION,
-    debug=settings.DEBUG
+    debug=settings.DEBUG,
+    description="Pulse Social Media Platform API - A modern social networking backend"
 )
 
 # Configure CORS
@@ -31,24 +43,26 @@ def read_root():
     return {
         "message": "Welcome to Pulse Social Media API",
         "version": settings.APP_VERSION,
-        "docs": "/docs"
+        "docs": "/docs",
+        "status": "running"
     }
 
 # Health check endpoint
 @app.get("/health")
 def health_check():
-    return {"status": "healthy"}
+    return {"status": "healthy", "service": "Pulse API"}
 
-# Include routers (uncomment as we create them)
-# app.include_router(auth.router, prefix="/auth", tags=["Authentication"])
-# app.include_router(users.router, prefix="/users", tags=["Users"])
-# app.include_router(posts.router, prefix="/posts", tags=["Posts"])
-# app.include_router(comments.router, prefix="/comments", tags=["Comments"])
-# app.include_router(likes.router, prefix="/likes", tags=["Likes"])
-# app.include_router(follows.router, prefix="/follows", tags=["Follows"])
-# app.include_router(messages.router, prefix="/messages", tags=["Messages"])
-# app.include_router(notifications.router, prefix="/notifications", tags=["Notifications"])
-# app.include_router(stories.router, prefix="/stories", tags=["Stories"])
+# Include all routers
+app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
+app.include_router(users_router, prefix="/users", tags=["Users"])
+app.include_router(posts_router, prefix="/posts", tags=["Posts"])
+app.include_router(comments_router, prefix="/comments", tags=["Comments"])
+app.include_router(likes_router, prefix="/likes", tags=["Likes"])
+app.include_router(follows_router, prefix="/follows", tags=["Follows"])
+app.include_router(messages_router, prefix="/messages", tags=["Messages"])
+app.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
+app.include_router(stories_router, prefix="/stories", tags=["Stories"])
+app.include_router(hashtags_router, prefix="/hashtags", tags=["Hashtags"])
 
 if __name__ == "__main__":
     import uvicorn
