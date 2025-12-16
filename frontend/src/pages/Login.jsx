@@ -29,8 +29,10 @@ const Login = ({ onLogin }) => {
     try {
       let response;
       if (isLogin) {
-        response = await login(formData.email, formData.password);
+        // Login with username and password
+        response = await login(formData.username, formData.password);
       } else {
+        // Register with username, email, and password
         response = await register(formData.username, formData.email, formData.password);
       }
 
@@ -116,18 +118,38 @@ const Login = ({ onLogin }) => {
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              {/* Username field - always show */}
+              <div>
+                <label className="block text-sm font-medium text-slate-50 mb-2">
+                  Username
+                </label>
+                <div className="relative">
+                  <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="Enter your username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                    className="w-full py-3 pl-11 pr-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors"
+                  />
+                </div>
+              </div>
+
+              {/* Email field - only for signup */}
               {!isLogin && (
                 <div>
                   <label className="block text-sm font-medium text-slate-50 mb-2">
-                    Username
+                    Email
                   </label>
                   <div className="relative">
-                    <User size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
                     <input
-                      type="text"
-                      name="username"
-                      placeholder="Enter your username"
-                      value={formData.username}
+                      type="email"
+                      name="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
                       onChange={handleChange}
                       required
                       className="w-full py-3 pl-11 pr-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors"
@@ -135,24 +157,6 @@ const Login = ({ onLogin }) => {
                   </div>
                 </div>
               )}
-
-              <div>
-                <label className="block text-sm font-medium text-slate-50 mb-2">
-                  Email
-                </label>
-                <div className="relative">
-                  <Mail size={18} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500" />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                    className="w-full py-3 pl-11 pr-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors"
-                  />
-                </div>
-              </div>
 
               <div>
                 <label className="block text-sm font-medium text-slate-50 mb-2">

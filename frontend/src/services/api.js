@@ -1,252 +1,86 @@
-// API Service - All API calls in one place
-// Currently using MOCK DATA - Replace with real API calls when backend is ready
+// Real API Service - Connected to FastAPI Backend
+import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+// Backend API base URL
+const API_BASE_URL = 'http://localhost:8000';
 
-// Mock current user (logged in user)
-let currentUser = {
-  user_id: 1,
-  username: 'john_doe',
-  email: 'john@example.com',
-  profile_info: 'Software developer | Tech enthusiast | Coffee lover ☕',
-  profile_picture: null,
-  followers_count: 1250,
-  following_count: 890,
-  posts_count: 145
-};
-
-// Mock users data
-const mockUsers = [
-  {
-    user_id: 2,
-    username: 'jane_smith',
-    email: 'jane@example.com',
-    profile_info: 'Designer & Artist 🎨',
-    profile_picture: null,
-    isFollowing: true
+// Create axios instance with default config
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
   },
-  {
-    user_id: 3,
-    username: 'mike_wilson',
-    email: 'mike@example.com',
-    profile_info: 'Photographer | Travel enthusiast 📸',
-    profile_picture: null,
-    isFollowing: false
-  },
-  {
-    user_id: 4,
-    username: 'sarah_jones',
-    email: 'sarah@example.com',
-    profile_info: 'Content creator | Blogger ✍️',
-    profile_picture: null,
-    isFollowing: true
+});
+
+// Add JWT token to requests automatically
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
-];
+  return config;
+});
 
-// Mock posts data
-let mockPosts = [
-  {
-    post_id: 1,
-    user_id: 2,
-    username: 'jane_smith',
-    text: 'Just finished working on this amazing UI design! What do you think? 🎨✨',
-    media: null,
-    likes_count: 234,
-    comments_count: 45,
-    is_liked: false,
-    created_at: '2 hours ago',
-    hashtags: ['design', 'ui', 'webdesign']
-  },
-  {
-    post_id: 2,
-    user_id: 3,
-    username: 'mike_wilson',
-    text: 'Sunset photography from my last trip to the mountains 🌄',
-    media: null,
-    likes_count: 567,
-    comments_count: 89,
-    is_liked: true,
-    created_at: '5 hours ago',
-    hashtags: ['photography', 'sunset', 'travel']
-  },
-  {
-    post_id: 3,
-    user_id: 1,
-    username: 'john_doe',
-    text: 'Working on a new React project! The component architecture is coming together nicely 💻',
-    media: null,
-    likes_count: 189,
-    comments_count: 23,
-    is_liked: false,
-    created_at: '8 hours ago',
-    hashtags: ['react', 'coding', 'webdev']
-  },
-  {
-    post_id: 4,
-    user_id: 4,
-    username: 'sarah_jones',
-    text: '10 tips for productive mornings! Check out my latest blog post 📝',
-    media: null,
-    likes_count: 423,
-    comments_count: 67,
-    is_liked: true,
-    created_at: '1 day ago',
-    hashtags: ['productivity', 'lifestyle', 'blogging']
-  }
-];
-
-// Mock comments data
-const mockComments = {
-  1: [
-    {
-      comment_id: 1,
-      user_id: 3,
-      username: 'mike_wilson',
-      text: 'This looks absolutely stunning! Love the color palette 🎨',
-      created_at: '1 hour ago'
-    },
-    {
-      comment_id: 2,
-      user_id: 1,
-      username: 'john_doe',
-      text: 'Great work! The layout is very clean and modern.',
-      created_at: '30 minutes ago'
+// Handle errors globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Unauthorized - clear token and redirect to login
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
-  ],
-  2: [
-    {
-      comment_id: 3,
-      user_id: 2,
-      username: 'jane_smith',
-      text: 'Breathtaking! Where was this taken?',
-      created_at: '4 hours ago'
-    }
-  ]
-};
-
-// Mock notifications data
-let mockNotifications = [
-  {
-    notification_id: 1,
-    type: 'like',
-    content: 'jane_smith liked your post',
-    created_at: '5 minutes ago',
-    is_read: 0
-  },
-  {
-    notification_id: 2,
-    type: 'comment',
-    content: 'mike_wilson commented on your post',
-    created_at: '30 minutes ago',
-    is_read: 0
-  },
-  {
-    notification_id: 3,
-    type: 'follow',
-    content: 'sarah_jones started following you',
-    created_at: '2 hours ago',
-    is_read: 1
-  },
-  {
-    notification_id: 4,
-    type: 'like',
-    content: 'john_smith liked your post',
-    created_at: '1 day ago',
-    is_read: 1
+    return Promise.reject(error);
   }
-];
-
-// Mock messages data
-let mockMessages = [
-  {
-    message_id: 1,
-    sender_id: 2,
-    sender_username: 'jane_smith',
-    receiver_id: 1,
-    content: 'Hey! Did you see my latest design?',
-    created_at: '10 minutes ago',
-    is_read: 0
-  },
-  {
-    message_id: 2,
-    sender_id: 3,
-    sender_username: 'mike_wilson',
-    receiver_id: 1,
-    content: 'Thanks for the feedback on my photos!',
-    created_at: '1 hour ago',
-    is_read: 1
-  },
-  {
-    message_id: 3,
-    sender_id: 4,
-    sender_username: 'sarah_jones',
-    receiver_id: 1,
-    content: 'Would love to collaborate on a project!',
-    created_at: '3 hours ago',
-    is_read: 1
-  }
-];
-
-// Mock stories data
-const mockStories = [
-  {
-    story_id: 1,
-    user_id: 2,
-    username: 'jane_smith',
-    media: null,
-    created_at: '2 hours ago'
-  },
-  {
-    story_id: 2,
-    user_id: 3,
-    username: 'mike_wilson',
-    media: null,
-    created_at: '5 hours ago'
-  },
-  {
-    story_id: 3,
-    user_id: 4,
-    username: 'sarah_jones',
-    media: null,
-    created_at: '8 hours ago'
-  }
-];
+);
 
 // ============================================
 // AUTH API CALLS
 // ============================================
 
-export const login = async (email, password) => {
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  // Mock validation
-  if (email && password) {
+export const login = async (username, password) => {
+  try {
+    const response = await api.post('/auth/login', {
+      username,
+      password,
+    });
+    
     return {
       success: true,
-      user: currentUser,
-      token: 'mock_jwt_token_12345'
+      user: response.data.user,
+      token: response.data.access_token,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Login failed',
     };
   }
-  
-  return {
-    success: false,
-    message: 'Invalid credentials'
-  };
 };
 
 export const register = async (username, email, password) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  return {
-    success: true,
-    user: { ...currentUser, username, email },
-    token: 'mock_jwt_token_12345'
-  };
+  try {
+    const response = await api.post('/auth/register', {
+      username,
+      email,
+      password,
+    });
+    
+    return {
+      success: true,
+      user: response.data.user,
+      token: response.data.access_token,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Registration failed',
+    };
+  }
 };
 
 export const logout = async () => {
-  await new Promise(resolve => setTimeout(resolve, 200));
   localStorage.removeItem('token');
   localStorage.removeItem('user');
   return { success: true };
@@ -256,33 +90,81 @@ export const logout = async () => {
 // USER API CALLS
 // ============================================
 
-export const getCurrentUser = () => {
-  return currentUser;
+export const getCurrentUser = async () => {
+  try {
+    const response = await api.get('/users/me');
+    
+    // Get user stats
+    const statsResponse = await api.get(`/users/${response.data.user_id}/stats`);
+    
+    return {
+      ...response.data,
+      posts_count: statsResponse.data.posts_count,
+      followers_count: statsResponse.data.followers_count,
+      following_count: statsResponse.data.following_count,
+    };
+  } catch (error) {
+    console.error('Error getting current user:', error);
+    return null;
+  }
 };
 
 export const getUserProfile = async (userId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  if (userId === currentUser.user_id) {
-    return currentUser;
+  try {
+    const response = await api.get(`/users/${userId}`);
+    
+    // Get user stats
+    const statsResponse = await api.get(`/users/${userId}/stats`);
+    
+    return {
+      ...response.data,
+      posts_count: statsResponse.data.posts_count,
+      followers_count: statsResponse.data.followers_count,
+      following_count: statsResponse.data.following_count,
+    };
+  } catch (error) {
+    console.error('Error getting user profile:', error);
+    return null;
   }
-  
-  return mockUsers.find(u => u.user_id === userId) || mockUsers[0];
 };
 
 export const updateProfile = async (profileData) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  currentUser = { ...currentUser, ...profileData };
-  return {
-    success: true,
-    user: currentUser
-  };
+  try {
+    const response = await api.put('/users/me', profileData);
+    return {
+      success: true,
+      user: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Update failed',
+    };
+  }
 };
 
 export const getSuggestedUsers = async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockUsers.slice(0, 3);
+  try {
+    const response = await api.get('/users/', {
+      params: { limit: 5 },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error getting suggested users:', error);
+    return [];
+  }
+};
+
+export const searchUsers = async (query) => {
+  try {
+    const response = await api.get('/users/', {
+      params: { query, limit: 20 },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error searching users:', error);
+    return [];
+  }
 };
 
 // ============================================
@@ -290,42 +172,60 @@ export const getSuggestedUsers = async () => {
 // ============================================
 
 export const getPosts = async () => {
-  await new Promise(resolve => setTimeout(resolve, 400));
-  return mockPosts;
+  try {
+    const response = await api.get('/posts/', {
+      params: { limit: 20 },
+    });
+    return response.data.map(post => ({
+      ...post,
+      created_at: formatTimeAgo(post.created_at),
+    }));
+  } catch (error) {
+    console.error('Error getting posts:', error);
+    return [];
+  }
 };
 
 export const getUserPosts = async (userId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockPosts.filter(p => p.user_id === userId);
+  try {
+    const response = await api.get(`/posts/user/${userId}`, {
+      params: { limit: 20 },
+    });
+    return response.data.map(post => ({
+      ...post,
+      created_at: formatTimeAgo(post.created_at),
+    }));
+  } catch (error) {
+    console.error('Error getting user posts:', error);
+    return [];
+  }
 };
 
 export const createPost = async (postData) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const newPost = {
-    post_id: mockPosts.length + 1,
-    user_id: currentUser.user_id,
-    username: currentUser.username,
-    text: postData.text,
-    media: postData.media || null,
-    likes_count: 0,
-    comments_count: 0,
-    is_liked: false,
-    created_at: 'Just now',
-    hashtags: postData.hashtags || []
-  };
-  
-  mockPosts = [newPost, ...mockPosts];
-  return {
-    success: true,
-    post: newPost
-  };
+  try {
+    const response = await api.post('/posts/', postData);
+    return {
+      success: true,
+      post: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Failed to create post',
+    };
+  }
 };
 
 export const deletePost = async (postId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  mockPosts = mockPosts.filter(p => p.post_id !== postId);
-  return { success: true };
+  try {
+    await api.delete(`/posts/${postId}`);
+    return { success: true };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Failed to delete post',
+    };
+  }
 };
 
 // ============================================
@@ -333,19 +233,23 @@ export const deletePost = async (postId) => {
 // ============================================
 
 export const likePost = async (postId) => {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  
-  const post = mockPosts.find(p => p.post_id === postId);
-  if (post) {
-    post.is_liked = !post.is_liked;
-    post.likes_count += post.is_liked ? 1 : -1;
+  try {
+    // Check if already liked
+    const checkResponse = await api.get(`/likes/post/${postId}/check`);
+    
+    if (checkResponse.data.is_liked) {
+      // Unlike
+      await api.delete(`/likes/${postId}`);
+      return { success: true, is_liked: false };
+    } else {
+      // Like
+      await api.post('/likes/', { post_id: postId });
+      return { success: true, is_liked: true };
+    }
+  } catch (error) {
+    console.error('Error toggling like:', error);
+    return { success: false };
   }
-  
-  return {
-    success: true,
-    is_liked: post.is_liked,
-    likes_count: post.likes_count
-  };
 };
 
 // ============================================
@@ -353,36 +257,34 @@ export const likePost = async (postId) => {
 // ============================================
 
 export const getComments = async (postId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockComments[postId] || [];
+  try {
+    const response = await api.get(`/comments/post/${postId}`);
+    return response.data.map(comment => ({
+      ...comment,
+      created_at: formatTimeAgo(comment.created_at),
+    }));
+  } catch (error) {
+    console.error('Error getting comments:', error);
+    return [];
+  }
 };
 
 export const addComment = async (postId, text) => {
-  await new Promise(resolve => setTimeout(resolve, 400));
-  
-  const newComment = {
-    comment_id: Date.now(),
-    user_id: currentUser.user_id,
-    username: currentUser.username,
-    text: text,
-    created_at: 'Just now'
-  };
-  
-  if (!mockComments[postId]) {
-    mockComments[postId] = [];
+  try {
+    const response = await api.post('/comments/', {
+      post_id: postId,
+      text: text,
+    });
+    return {
+      success: true,
+      comment: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Failed to add comment',
+    };
   }
-  mockComments[postId].push(newComment);
-  
-  // Update comment count
-  const post = mockPosts.find(p => p.post_id === postId);
-  if (post) {
-    post.comments_count += 1;
-  }
-  
-  return {
-    success: true,
-    comment: newComment
-  };
 };
 
 // ============================================
@@ -390,27 +292,43 @@ export const addComment = async (postId, text) => {
 // ============================================
 
 export const followUser = async (userId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  const user = mockUsers.find(u => u.user_id === userId);
-  if (user) {
-    user.isFollowing = !user.isFollowing;
+  try {
+    // Check if already following
+    const checkResponse = await api.get(`/follows/check/${userId}`);
+    
+    if (checkResponse.data.is_following) {
+      // Unfollow
+      await api.delete(`/follows/${userId}`);
+      return { success: true, is_following: false };
+    } else {
+      // Follow
+      await api.post('/follows/', { followee_id: userId });
+      return { success: true, is_following: true };
+    }
+  } catch (error) {
+    console.error('Error toggling follow:', error);
+    return { success: false };
   }
-  
-  return {
-    success: true,
-    is_following: user.isFollowing
-  };
 };
 
 export const getFollowers = async (userId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockUsers.slice(0, 2);
+  try {
+    const response = await api.get(`/follows/followers/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting followers:', error);
+    return [];
+  }
 };
 
 export const getFollowing = async (userId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockUsers.slice(1, 3);
+  try {
+    const response = await api.get(`/follows/following/${userId}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error getting following:', error);
+    return [];
+  }
 };
 
 // ============================================
@@ -418,26 +336,36 @@ export const getFollowing = async (userId) => {
 // ============================================
 
 export const getNotifications = async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockNotifications;
+  try {
+    const response = await api.get('/notifications/', {
+      params: { limit: 50 },
+    });
+    return response.data.map(notification => ({
+      ...notification,
+      created_at: formatTimeAgo(notification.created_at),
+    }));
+  } catch (error) {
+    console.error('Error getting notifications:', error);
+    return [];
+  }
 };
 
 export const markNotificationAsRead = async (notificationId) => {
-  await new Promise(resolve => setTimeout(resolve, 200));
-  
-  const notification = mockNotifications.find(n => n.notification_id === notificationId);
-  if (notification) {
-    notification.is_read = 1;
+  try {
+    await api.put(`/notifications/${notificationId}`, { is_read: 1 });
+    return { success: true };
+  } catch (error) {
+    return { success: false };
   }
-  
-  return { success: true };
 };
 
 export const markAllNotificationsAsRead = async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  
-  mockNotifications = mockNotifications.map(n => ({ ...n, is_read: 1 }));
-  return { success: true };
+  try {
+    await api.put('/notifications/mark-all-read');
+    return { success: true };
+  } catch (error) {
+    return { success: false };
+  }
 };
 
 // ============================================
@@ -445,36 +373,52 @@ export const markAllNotificationsAsRead = async () => {
 // ============================================
 
 export const getMessages = async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockMessages;
+  try {
+    const response = await api.get('/messages/conversations');
+    return response.data.map(conversation => ({
+      message_id: conversation.user_id,
+      sender_id: conversation.user_id,
+      sender_username: conversation.username,
+      receiver_id: null,
+      content: conversation.last_message || 'No messages yet',
+      created_at: formatTimeAgo(conversation.last_message_time),
+      is_read: conversation.unread_count === 0 ? 1 : 0,
+    }));
+  } catch (error) {
+    console.error('Error getting messages:', error);
+    return [];
+  }
 };
 
 export const getConversation = async (userId) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockMessages.filter(m => 
-    (m.sender_id === userId && m.receiver_id === currentUser.user_id) ||
-    (m.sender_id === currentUser.user_id && m.receiver_id === userId)
-  );
+  try {
+    const response = await api.get(`/messages/conversation/${userId}`);
+    return response.data.map(message => ({
+      ...message,
+      created_at: formatTimeAgo(message.created_at),
+    }));
+  } catch (error) {
+    console.error('Error getting conversation:', error);
+    return [];
+  }
 };
 
 export const sendMessage = async (receiverId, content) => {
-  await new Promise(resolve => setTimeout(resolve, 400));
-  
-  const newMessage = {
-    message_id: mockMessages.length + 1,
-    sender_id: currentUser.user_id,
-    sender_username: currentUser.username,
-    receiver_id: receiverId,
-    content: content,
-    created_at: 'Just now',
-    is_read: 0
-  };
-  
-  mockMessages = [newMessage, ...mockMessages];
-  return {
-    success: true,
-    message: newMessage
-  };
+  try {
+    const response = await api.post('/messages/', {
+      receiver_id: receiverId,
+      content: content,
+    });
+    return {
+      success: true,
+      message: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Failed to send message',
+    };
+  }
 };
 
 // ============================================
@@ -482,41 +426,67 @@ export const sendMessage = async (receiverId, content) => {
 // ============================================
 
 export const getStories = async () => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockStories;
+  try {
+    const response = await api.get('/stories/');
+    return response.data.map(story => ({
+      ...story,
+      created_at: formatTimeAgo(story.created_at),
+    }));
+  } catch (error) {
+    console.error('Error getting stories:', error);
+    return [];
+  }
 };
 
 export const createStory = async (storyData) => {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const newStory = {
-    story_id: mockStories.length + 1,
-    user_id: currentUser.user_id,
-    username: currentUser.username,
-    media: storyData.media,
-    created_at: 'Just now'
-  };
-  
-  return {
-    success: true,
-    story: newStory
-  };
+  try {
+    const response = await api.post('/stories/', storyData);
+    return {
+      success: true,
+      story: response.data,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Failed to create story',
+    };
+  }
 };
 
 // ============================================
 // SEARCH API CALLS
 // ============================================
 
-export const searchUsers = async (query) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockUsers.filter(u => 
-    u.username.toLowerCase().includes(query.toLowerCase())
-  );
+export const searchPosts = async (hashtag) => {
+  try {
+    const response = await api.get(`/hashtags/${hashtag}/posts`);
+    return response.data.map(post => ({
+      ...post,
+      created_at: formatTimeAgo(post.created_at),
+    }));
+  } catch (error) {
+    console.error('Error searching posts:', error);
+    return [];
+  }
 };
 
-export const searchPosts = async (hashtag) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockPosts.filter(p => 
-    p.hashtags && p.hashtags.includes(hashtag)
-  );
-};
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+function formatTimeAgo(dateString) {
+  if (!dateString) return 'Unknown';
+  
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+  
+  if (seconds < 60) return 'Just now';
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+  if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+  
+  return date.toLocaleDateString();
+}
+
+export default api;
