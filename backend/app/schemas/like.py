@@ -5,6 +5,10 @@ from datetime import datetime
 # LIKE SCHEMAS
 # ============================================
 
+class LikeCreate(BaseModel):
+    """Schema for creating a like"""
+    post_id: int
+
 class LikeResponse(BaseModel):
     """Schema for like response"""
     like_id: int

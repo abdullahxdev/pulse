@@ -14,10 +14,12 @@ class UserBase(BaseModel):
 class UserCreate(UserBase):
     """Schema for user registration"""
     password: str = Field(..., min_length=6, max_length=100)
+    profile_info: Optional[str] = None
+    profile_picture: Optional[str] = None
 
 class UserLogin(BaseModel):
     """Schema for user login"""
-    email: EmailStr
+    username: str = Field(..., min_length=3, max_length=50)
     password: str
 
 class UserUpdate(BaseModel):
@@ -26,6 +28,7 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     profile_info: Optional[str] = Field(None, max_length=500)
     profile_picture: Optional[str] = None
+    password: Optional[str] = Field(None, min_length=6, max_length=100)
 
 class UserResponse(UserBase):
     """Schema for user response (public info)"""

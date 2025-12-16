@@ -12,7 +12,7 @@ class CommentBase(BaseModel):
 
 class CommentCreate(CommentBase):
     """Schema for creating a comment"""
-    pass
+    post_id: int
 
 class CommentUpdate(BaseModel):
     """Schema for updating a comment"""

@@ -12,7 +12,7 @@ class StoryBase(BaseModel):
 
 class StoryCreate(StoryBase):
     """Schema for creating a story"""
-    pass
+    expiration_hours: int = Field(default=24, ge=1, le=48)  # Story duration in hours
 
 class StoryResponse(StoryBase):
     """Schema for story response"""

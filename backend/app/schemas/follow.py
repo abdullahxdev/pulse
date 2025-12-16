@@ -6,6 +6,10 @@ from typing import List
 # FOLLOW SCHEMAS
 # ============================================
 
+class FollowCreate(BaseModel):
+    """Schema for creating a follow"""
+    followee_id: int
+
 class FollowResponse(BaseModel):
     """Schema for follow relationship response"""
     follow_id: int

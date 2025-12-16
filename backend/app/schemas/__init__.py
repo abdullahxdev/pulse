@@ -25,11 +25,13 @@ from .comment import (
 )
 
 from .like import (
+    LikeCreate,
     LikeResponse,
     LikeToggleResponse
 )
 
 from .follow import (
+    FollowCreate,
     FollowResponse,
     FollowToggleResponse,
     FollowerResponse,
@@ -45,6 +47,7 @@ from .message import (
 
 from .notification import (
     NotificationCreate,
+    NotificationUpdate,
     NotificationResponse,
     NotificationMarkReadResponse,
     NotificationStatsResponse
@@ -83,10 +86,12 @@ __all__ = [
     "CommentResponse",
     
     # Like
+    "LikeCreate",
     "LikeResponse",
     "LikeToggleResponse",
     
     # Follow
+    "FollowCreate",
     "FollowResponse",
     "FollowToggleResponse",
     "FollowerResponse",
@@ -100,6 +105,7 @@ __all__ = [
     
     # Notification
     "NotificationCreate",
+    "NotificationUpdate",
     "NotificationResponse",
     "NotificationMarkReadResponse",
     "NotificationStatsResponse",

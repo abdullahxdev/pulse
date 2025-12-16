@@ -15,6 +15,10 @@ class NotificationCreate(NotificationBase):
     """Schema for creating a notification"""
     user_id: int
 
+class NotificationUpdate(BaseModel):
+    """Schema for updating notification read status"""
+    is_read: int = Field(..., ge=0, le=1)  # 0 or 1
+
 class NotificationResponse(NotificationBase):
     """Schema for notification response"""
     notification_id: int
