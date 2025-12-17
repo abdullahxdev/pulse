@@ -22,22 +22,31 @@ api.interceptors.request.use((config) => {
 });
 
 // ============================================
-// NUCLEAR OPTION ERROR HANDLER
+// FINAL POLISHED INTERCEPTOR
 // ============================================
-// This interceptor will NEVER force a page reload.
-// It allows your Login component to handle errors gracefully.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // Log the error clearly so you can see it in Console
-    if (error.response) {
-       console.error("❌ API Error:", error.response.status, error.response.data);
-    } else {
-       console.error("❌ Network Error:", error.message);
+    // 1. Get the URL and identify if this is an Auth request
+    const url = error.config?.url || '';
+    const isAuthRequest = url.includes('login') || url.includes('register');
+
+    // 2. SMART REDIRECT LOGIC
+    // IF: The error is 401 (Unauthorized)
+    // AND: We are NOT currently trying to log in (protects against the loop)
+    if (error.response?.status === 401 && !isAuthRequest) {
+      console.warn("⚠️ Session expired. Redirecting to login...");
+      
+      // Clear data and redirect
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+      return Promise.reject(error);
     }
 
-    // WE DO NOT REDIRECT HERE. 
-    // We let the specific page (like Login.jsx) handle the error.
+    // 3. For all other errors (or 401s during login), just pass them to the component.
+    // We do NOT log them here with console.error to avoid cluttering the console.
+    // The Login component handles the UI for "Wrong Password".
     return Promise.reject(error);
   }
 );
@@ -48,13 +57,10 @@ api.interceptors.response.use(
 
 export const login = async (username, password) => {
   try {
-    console.log('🔐 Attempting login for:', username);
     const response = await api.post('/auth/login', {
       username,
       password,
     });
-    
-    console.log('✅ Login response:', response.data);
     
     return {
       success: true,
@@ -62,24 +68,21 @@ export const login = async (username, password) => {
       token: response.data.access_token,
     };
   } catch (error) {
-    console.error('❌ Login error:', error.response?.data);
+    // Return a clean error object so Login.jsx can display it
     return {
       success: false,
-      message: error.response?.data?.detail || 'Login failed',
+      message: error.response?.data?.detail || 'Login failed. Please check your credentials.',
     };
   }
 };
 
 export const register = async (username, email, password) => {
   try {
-    console.log('📝 Attempting registration for:', username);
     const response = await api.post('/auth/register', {
       username,
       email,
       password,
     });
-    
-    console.log('✅ Registration response:', response.data);
     
     return {
       success: true,
@@ -87,10 +90,9 @@ export const register = async (username, email, password) => {
       token: response.data.access_token,
     };
   } catch (error) {
-    console.error('❌ Registration error:', error.response?.data);
     return {
       success: false,
-      message: error.response?.data?.detail || 'Registration failed',
+      message: error.response?.data?.detail || 'Registration failed. Try a different username.',
     };
   }
 };
@@ -98,7 +100,7 @@ export const register = async (username, email, password) => {
 export const logout = async () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
-  window.location.href = '/login'; // Manual logout only
+  window.location.href = '/login'; 
   return { success: true };
 };
 
@@ -110,6 +112,7 @@ export const getCurrentUser = async () => {
   try {
     const response = await api.get('/users/me');
     
+    // Gracefully handle stats fetching
     try {
         const statsResponse = await api.get(`/users/${response.data.user_id}/stats`);
         return {
@@ -119,6 +122,7 @@ export const getCurrentUser = async () => {
           following_count: statsResponse.data.following_count,
         };
     } catch (e) {
+        // If stats fail, just return the user info without stats
         return response.data;
     }
   } catch (error) {
