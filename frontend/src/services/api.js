@@ -21,16 +21,23 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle errors globally
+// ============================================
+// NUCLEAR OPTION ERROR HANDLER
+// ============================================
+// This interceptor will NEVER force a page reload.
+// It allows your Login component to handle errors gracefully.
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
-      // Unauthorized - clear token and redirect to login
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+    // Log the error clearly so you can see it in Console
+    if (error.response) {
+       console.error("❌ API Error:", error.response.status, error.response.data);
+    } else {
+       console.error("❌ Network Error:", error.message);
     }
+
+    // WE DO NOT REDIRECT HERE. 
+    // We let the specific page (like Login.jsx) handle the error.
     return Promise.reject(error);
   }
 );
@@ -91,6 +98,7 @@ export const register = async (username, email, password) => {
 export const logout = async () => {
   localStorage.removeItem('token');
   localStorage.removeItem('user');
+  window.location.href = '/login'; // Manual logout only
   return { success: true };
 };
 
@@ -102,15 +110,17 @@ export const getCurrentUser = async () => {
   try {
     const response = await api.get('/users/me');
     
-    // Get user stats
-    const statsResponse = await api.get(`/users/${response.data.user_id}/stats`);
-    
-    return {
-      ...response.data,
-      posts_count: statsResponse.data.posts_count,
-      followers_count: statsResponse.data.followers_count,
-      following_count: statsResponse.data.following_count,
-    };
+    try {
+        const statsResponse = await api.get(`/users/${response.data.user_id}/stats`);
+        return {
+          ...response.data,
+          posts_count: statsResponse.data.posts_count,
+          followers_count: statsResponse.data.followers_count,
+          following_count: statsResponse.data.following_count,
+        };
+    } catch (e) {
+        return response.data;
+    }
   } catch (error) {
     console.error('Error getting current user:', error);
     return null;
@@ -121,15 +131,17 @@ export const getUserProfile = async (userId) => {
   try {
     const response = await api.get(`/users/${userId}`);
     
-    // Get user stats
-    const statsResponse = await api.get(`/users/${userId}/stats`);
-    
-    return {
-      ...response.data,
-      posts_count: statsResponse.data.posts_count,
-      followers_count: statsResponse.data.followers_count,
-      following_count: statsResponse.data.following_count,
-    };
+    try {
+        const statsResponse = await api.get(`/users/${userId}/stats`);
+        return {
+          ...response.data,
+          posts_count: statsResponse.data.posts_count,
+          followers_count: statsResponse.data.followers_count,
+          following_count: statsResponse.data.following_count,
+        };
+    } catch (e) {
+        return response.data;
+    }
   } catch (error) {
     console.error('Error getting user profile:', error);
     return null;
