@@ -7,6 +7,7 @@ const Login = ({ onLogin }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -16,6 +17,7 @@ const Login = ({ onLogin }) => {
   });
 
   const handleChange = (e) => {
+    setError(''); // Clear error on input change
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -24,52 +26,62 @@ const Login = ({ onLogin }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('=== FORM SUBMITTED ===');
+    console.log('Is Login:', isLogin);
+    console.log('Form Data:', formData);
+    
     setLoading(true);
+    setError('');
 
     try {
       let response;
+      
       if (isLogin) {
-        // Login with username and password
+        console.log('🔐 Calling login API...');
         response = await login(formData.username, formData.password);
       } else {
-        // Register with username, email, and password
+        console.log('📝 Calling register API...');
         response = await register(formData.username, formData.email, formData.password);
       }
 
-      console.log('📦 Response received:', response);
+      console.log('📦 API Response:', response);
 
       if (response.success) {
-        console.log('✅ Saving to localStorage...');
+        console.log('✅ Authentication successful!');
         console.log('Token:', response.token);
         console.log('User:', response.user);
         
-        // Save token and user
+        // Save to localStorage
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
         
-        // Verify it was saved
+        // Verify saved
         const savedToken = localStorage.getItem('token');
         const savedUser = localStorage.getItem('user');
-        console.log('Verified - Token saved:', savedToken ? 'YES' : 'NO');
-        console.log('Verified - User saved:', savedUser ? 'YES' : 'NO');
+        console.log('✅ Token saved:', savedToken ? 'YES' : 'NO');
+        console.log('✅ User saved:', savedUser ? 'YES' : 'NO');
         
-        // Call parent component to update state
+        // Update parent state
         if (onLogin) {
-          console.log('🔄 Calling onLogin callback...');
+          console.log('🔄 Calling onLogin...');
           onLogin(response.user);
         }
         
-        // Navigate to home
-        console.log('🚀 Navigating to /home...');
-        navigate('/home');
+        // Small delay to ensure state updates
+        setTimeout(() => {
+          console.log('🚀 Navigating to /home');
+          navigate('/home', { replace: true });
+        }, 100);
+        
       } else {
-        // Show error message
         console.error('❌ Authentication failed:', response.message);
-        alert(response.message || 'Authentication failed. Please check your credentials.');
+        setError(response.message || 'Authentication failed. Please check your credentials.');
       }
     } catch (error) {
-      console.error('❌ Unexpected error:', error);
-      alert('An error occurred. Please try again.');
+      console.error('❌ Exception:', error);
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -140,8 +152,15 @@ const Login = ({ onLogin }) => {
                 : 'Create an account to get started'}
             </p>
 
+            {/* Error Message */}
+            {error && (
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+                <p className="text-sm text-red-500">{error}</p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-              {/* Username field - always show */}
+              {/* Username field */}
               <div>
                 <label className="block text-sm font-medium text-slate-50 mb-2">
                   Username
@@ -156,6 +175,7 @@ const Login = ({ onLogin }) => {
                     onChange={handleChange}
                     required
                     minLength={3}
+                    autoComplete="username"
                     className="w-full py-3 pl-11 pr-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors"
                   />
                 </div>
@@ -176,12 +196,14 @@ const Login = ({ onLogin }) => {
                       value={formData.email}
                       onChange={handleChange}
                       required
+                      autoComplete="email"
                       className="w-full py-3 pl-11 pr-4 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors"
                     />
                   </div>
                 </div>
               )}
 
+              {/* Password field */}
               <div>
                 <label className="block text-sm font-medium text-slate-50 mb-2">
                   Password
@@ -196,6 +218,7 @@ const Login = ({ onLogin }) => {
                     onChange={handleChange}
                     required
                     minLength={6}
+                    autoComplete={isLogin ? "current-password" : "new-password"}
                     className="w-full py-3 pl-11 pr-11 bg-dark-bg border border-dark-border rounded-lg text-slate-50 text-sm placeholder:text-slate-500 focus:outline-none focus:border-primary transition-colors"
                   />
                   <button
@@ -207,7 +230,7 @@ const Login = ({ onLogin }) => {
                   </button>
                 </div>
                 <p className="text-xs text-slate-500 mt-1">
-                  {isLogin ? 'Use your username and password to login' : 'Minimum 6 characters'}
+                  {isLogin ? 'Use your username and password' : 'Minimum 6 characters'}
                 </p>
               </div>
 
@@ -225,7 +248,11 @@ const Login = ({ onLogin }) => {
                 {isLogin ? "Don't have an account? " : 'Already have an account? '}
                 <button
                   type="button"
-                  onClick={() => setIsLogin(!isLogin)}
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setError('');
+                    setFormData({ username: '', email: '', password: '' });
+                  }}
                   className="text-primary font-semibold hover:text-blue-400 transition-colors"
                 >
                   {isLogin ? 'Sign Up' : 'Login'}
