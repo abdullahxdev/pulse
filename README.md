@@ -2,6 +2,11 @@
 
 A modern, full-stack social media web application built with React and FastAPI. Pulse enables users to connect, share posts, follow other users, exchange messages, and explore trending content in a clean, minimalistic interface.
 
+<img width="1919" height="991" alt="Screenshot 2025-12-19 003323" src="https://github.com/user-attachments/assets/7a5cb6e8-6752-49b9-bca5-762997a00c91" />
+
+<img width="1901" height="992" alt="Screenshot 2025-12-19 003404" src="https://github.com/user-attachments/assets/c0b9e4b5-44fb-4b1f-9f93-e79d2216f63b" />
+
+
 ## Table of Contents
 
 - [Project Overview](#project-overview)
