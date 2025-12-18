@@ -1,370 +1,510 @@
-# 💙 Pulse - Social Media Platform (Frontend)
+# Pulse - Social Media Platform
 
-A modern, responsive social media frontend built with **React**, **Vite**, and **Tailwind CSS**. Features a sleek dark theme interface with posts, comments, messaging, stories, and user profiles.
+A modern, full-stack social media web application built with React and FastAPI. Pulse enables users to connect, share posts, follow other users, exchange messages, and explore trending content in a clean, minimalistic interface.
 
-## 📝 Short Description
+## Table of Contents
 
-**Pulse** is a contemporary social media platform frontend that enables users to connect, share posts with hashtags, interact through likes and comments, follow other users, send direct messages, and share temporary stories. Built with React and Tailwind CSS, it offers a responsive dark-themed interface optimized for seamless user experience across all devices.
-
-## 🔖 GitHub Short Description (2 lines)
-
-```
-A modern social media platform frontend built with React, Vite & Tailwind CSS. 
-Features dark theme UI, posts, comments, messaging, stories, and user profiles with full responsive design.
-```
-
----
-
-## 🌟 Features
-
-### ✅ Implemented (Frontend)
-- **User Authentication UI** - Beautiful login and signup pages
-- **Dynamic Feed** - Scrollable feed with post cards
-- **Post Management** - Create, view, and delete posts with text and hashtags
-- **Engagement System** - Like and comment on posts with live updates
-- **User Profiles** - Profile pages with user info, stats, and posts
-- **Follow System** - Follow/unfollow users interface
-- **Direct Messaging** - One-on-one messaging interface
-- **Notifications** - Notification center with read/unread filters
-- **Stories** - Story viewer carousel component
-- **Hashtag Display** - Hashtag tags on posts and trending section
-- **Suggested Users** - User recommendation cards
-- **Dark Theme** - Modern dark UI with smooth animations
-- **Responsive Design** - Works on mobile, tablet, and desktop
-- **Mock Data** - Built-in mock API for testing frontend
+- [Project Overview](#project-overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Architecture Overview](#architecture-overview)
+- [Project Structure](#project-structure)
+- [Setup and Installation](#setup-and-installation)
+- [Environment Variables](#environment-variables)
+- [Running the Application](#running-the-application)
+- [Key Functional Workflows](#key-functional-workflows)
+- [API Documentation](#api-documentation)
+- [Known Challenges and Solutions](#known-challenges-and-solutions)
+- [Contributing](#contributing)
 
 ---
 
-## 🛠️ Tech Stack
+## Project Overview
+
+Pulse is a social media platform designed to provide users with a streamlined experience for sharing content and connecting with others. The application prioritizes simplicity, performance, and a clean user interface while delivering all essential social networking features.
+
+### Core Purpose
+
+The platform solves the need for a lightweight, modern social networking application that:
+
+- Provides real-time social interactions without unnecessary complexity
+- Offers a distraction-free, minimalistic user interface
+- Maintains data persistence and synchronization across sessions
+- Delivers responsive performance on modern web browsers
+
+---
+
+## Key Features
+
+### Authentication System
+- User registration with email validation
+- Secure login with JWT-based authentication
+- Session persistence across browser refreshes
+- Automatic token management and renewal
+
+### Post Management
+- Create text posts with optional media attachments
+- Image upload support (JPG, PNG, GIF, WebP)
+- Hashtag support for content categorization
+- Like, comment, and save functionality
+- Post deletion for content owners
+
+### Follow System
+- Follow and unfollow other users
+- Real-time follower and following counts
+- Suggested users based on network activity
+- Profile-level follow status indicators
+
+### Messaging
+- Direct messaging between users
+- Conversation history persistence
+- Real-time message synchronization
+- Unread message indicators
+
+### User Profiles
+- Customizable user profiles
+- Bio and profile information editing
+- Post history on profile pages
+- Follower and following statistics
+
+### Explore and Discovery
+- Search functionality for users and content
+- Trending hashtags section
+- Explore page for content discovery
+- User suggestions based on activity
+
+### Saved Posts
+- Bookmark posts for later viewing
+- Persistent saved posts collection
+- Easy access to saved content
+
+### Notifications
+- Activity notifications for interactions
+- Mark as read functionality
+- Notification filtering options
+
+---
+
+## Tech Stack
 
 ### Frontend
-- **React** 18.2.0 - Modern UI library with hooks
-- **Vite** 5.0+ - Lightning-fast build tool and dev server
-- **Tailwind CSS** 3.4+ - Utility-first CSS framework for styling
-- **React Router DOM** 6.20+ - Client-side routing and navigation
-- **Axios** 1.6+ - HTTP client for future API integration
-- **Lucide React** 0.263+ - Beautiful modern icon library
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| React | 18.2.0 | UI component framework |
+| Vite | 5.0.0 | Build tool and dev server |
+| React Router DOM | 6.30.2 | Client-side routing |
+| Axios | 1.13.2 | HTTP client for API calls |
+| Tailwind CSS | 3.4.19 | Utility-first CSS framework |
+| Lucide React | 0.263.1 | Icon library |
+
+### Backend
+
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| FastAPI | 0.115.5 | Web framework for API |
+| SQLAlchemy | 2.0.36 | ORM for database operations |
+| PostgreSQL | - | Primary database |
+| Pydantic | 2.10.3 | Data validation |
+| Python-Jose | 3.3.0 | JWT token handling |
+| Passlib | 1.7.4 | Password hashing |
+| Uvicorn | 0.32.1 | ASGI server |
+
+### Database
+
+- **PostgreSQL**: Primary relational database for all persistent data
+- **SQLAlchemy ORM**: Object-relational mapping for database interactions
+
+### Authentication
+
+- **JWT (JSON Web Tokens)**: Stateless authentication mechanism
+- **BCrypt**: Password hashing algorithm
+- **Bearer Token**: Authorization header format
 
 ---
 
-## 📁 Project Structure
+## Architecture Overview
+
+Pulse follows a client-server architecture with clear separation between frontend and backend responsibilities.
 
 ```
-pulse-frontend/
-├── public/
-│   └── index.html            # HTML entry point
-├── src/
-│   ├── components/           # Reusable React components
-│   │   ├── Navbar.jsx        # Top navigation bar
-│   │   ├── Sidebar.jsx       # Left sidebar navigation
-│   │   ├── PostCard.jsx      # Individual post component
-│   │   ├── CommentSection.jsx # Comments display & input
-│   │   ├── CreatePost.jsx    # Create post modal
-│   │   ├── UserCard.jsx      # User profile card
-│   │   ├── StoryViewer.jsx   # Stories carousel
-│   │   └── NotificationItem.jsx # Single notification
-│   ├── pages/                # Main page components
-│   │   ├── Login.jsx         # Login & signup page
-│   │   ├── Home.jsx          # Main feed page
-│   │   ├── Profile.jsx       # User profile page
-│   │   ├── Notifications.jsx # Notifications page
-│   │   └── Messages.jsx      # Direct messages page
-│   ├── services/
-│   │   └── api.js            # API calls & mock data
-│   ├── App.jsx               # Main app with routing
-│   ├── index.js              # React entry point
-│   └── index.css             # Tailwind & global styles
-├── tailwind.config.js        # Tailwind configuration
-├── vite.config.js            # Vite configuration
-├── package.json              # Dependencies
++------------------+         +------------------+         +------------------+
+|                  |  HTTP   |                  |   SQL   |                  |
+|  React Frontend  | <-----> |  FastAPI Backend | <-----> |   PostgreSQL     |
+|  (Vite Dev)      |  REST   |  (Uvicorn)       |         |   Database       |
+|                  |         |                  |         |                  |
++------------------+         +------------------+         +------------------+
+      |                             |
+      |                             |
+      v                             v
++------------------+         +------------------+
+| Local Storage    |         | Static Files     |
+| (Token, User)    |         | (Uploads)        |
++------------------+         +------------------+
+```
+
+### Communication Flow
+
+1. **Frontend to Backend**: All API communication uses REST endpoints over HTTP
+2. **Authentication Flow**:
+   - User submits credentials
+   - Backend validates and returns JWT token
+   - Frontend stores token in localStorage
+   - Subsequent requests include token in Authorization header
+3. **Data Persistence**:
+   - Database serves as the single source of truth
+   - Frontend fetches fresh data on component mount
+   - State updates are synchronized through API calls
+
+### Request Flow
+
+```
+User Action -> React Component -> API Service (axios) -> FastAPI Router ->
+SQLAlchemy ORM -> PostgreSQL -> Response -> Component State Update -> UI Re-render
+```
+
+---
+
+## Project Structure
+
+```
+pulse/
+├── frontend/                 # React frontend application
+│   ├── src/
+│   │   ├── components/       # Reusable UI components
+│   │   ├── pages/            # Page-level components
+│   │   ├── services/         # API service layer
+│   │   ├── App.jsx           # Root component
+│   │   ├── main.jsx          # Application entry point
+│   │   └── index.css         # Global styles
+│   ├── package.json          # Frontend dependencies
+│   ├── tailwind.config.js    # Tailwind configuration
+│   └── vite.config.js        # Vite configuration
+│
+├── backend/                  # FastAPI backend application
+│   ├── app/
+│   │   ├── models/           # SQLAlchemy database models
+│   │   ├── routers/          # API route handlers
+│   │   ├── schemas/          # Pydantic validation schemas
+│   │   ├── utils/            # Utility functions
+│   │   ├── config.py         # Application configuration
+│   │   ├── database.py       # Database connection setup
+│   │   └── main.py           # FastAPI application entry
+│   ├── uploads/              # Uploaded media files
+│   ├── requirements.txt      # Python dependencies
+│   └── .env                  # Environment variables
+│
 └── README.md                 # This file
 ```
 
+### Frontend Responsibility
+
+The frontend handles:
+- User interface rendering and interactions
+- Client-side routing and navigation
+- Form validation and user feedback
+- API communication and response handling
+- Local state management
+- Authentication token storage
+
+### Backend Responsibility
+
+The backend handles:
+- API endpoint definitions and routing
+- Business logic implementation
+- Database operations and queries
+- Authentication and authorization
+- File upload handling
+- Data validation and sanitization
+
 ---
 
-## 🚀 Getting Started
+## Setup and Installation
 
 ### Prerequisites
 
-- **Node.js** v16 or higher
-- **npm** or **yarn**
+- Node.js 18.x or higher
+- Python 3.11 or higher
+- PostgreSQL 14.x or higher
+- Git
 
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <your-repo-url>
-   cd pulse-frontend
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-4. **Open in browser**
-   ```
-   http://localhost:5173
-   ```
-
----
-
-## 📦 Dependencies
-
-### Production Dependencies
-```json
-{
-  "react": "^18.2.0",
-  "react-dom": "^18.2.0",
-  "react-router-dom": "^6.20.0",
-  "axios": "^1.6.0",
-  "lucide-react": "^0.263.1"
-}
-```
-
-### Development Dependencies
-```json
-{
-  "@vitejs/plugin-react": "^4.2.0",
-  "vite": "^5.0.0",
-  "tailwindcss": "^3.4.0",
-  "autoprefixer": "^10.4.16",
-  "postcss": "^8.4.32"
-}
-```
-
-### Install All at Once
-```bash
-npm install react react-dom react-router-dom axios lucide-react
-npm install -D vite @vitejs/plugin-react tailwindcss postcss autoprefixer
-```
-
----
-
-## 🎨 Design System
-
-### Custom Tailwind Colors
-```javascript
-colors: {
-  primary: {
-    DEFAULT: '#3b82f6',  // Bright blue
-    hover: '#2563eb',    // Darker blue
-  },
-  dark: {
-    bg: '#0f172a',       // Dark navy background
-    card: '#1e293b',     // Card background
-    border: '#334155',   // Border color
-    hover: '#475569',    // Hover state
-  },
-}
-```
-
-### Typography
-- **Font Family:** Poppins (Google Fonts)
-- **Font Weights:** 300, 400, 500, 600, 700
-
-### Key Tailwind Classes Used
-- **Layout:** `flex`, `grid`, `gap-*`, `max-w-*`
-- **Colors:** `bg-dark-bg`, `bg-primary`, `text-slate-50`
-- **Spacing:** `p-*`, `m-*`, `px-*`, `py-*`
-- **Borders:** `rounded-xl`, `border-dark-border`
-- **Effects:** `hover:*`, `transition-all`, `animate-*`
-- **Responsive:** `lg:*`, `md:*`, `sm:*`
-
----
-
-## 🔌 Current API Setup
-
-The app currently uses **mock data** from `src/services/api.js` for demonstration purposes.
-
-### Mock Features Working:
-- User login/signup (any credentials work)
-- Viewing posts feed
-- Creating posts
-- Liking posts
-- Adding comments
-- Following users
-- Sending messages
-- Viewing notifications
-
-### When Backend is Ready:
-1. Update `API_BASE_URL` in `src/services/api.js`
-2. Replace mock functions with real API calls
-3. Handle authentication tokens properly
-
----
-
-## 📱 Pages & Components
-
-### Pages
-1. **Login** (`/login`) - Authentication page with toggle between login/signup
-2. **Home** (`/home`) - Main feed with posts, stories, and suggested users
-3. **Profile** (`/profile/:userId`) - User profile with posts and stats
-4. **Notifications** (`/notifications`) - Notification center with filters
-5. **Messages** (`/messages`) - Direct messaging interface
-
-### Key Components
-1. **Navbar** - Fixed top navigation with search and icons
-2. **Sidebar** - Left navigation with user profile and menu
-3. **PostCard** - Displays individual posts with like/comment
-4. **CreatePost** - Modal for creating new posts
-5. **CommentSection** - Shows and adds comments
-6. **StoryViewer** - Horizontal scrolling stories
-7. **UserCard** - User suggestion card with follow button
-8. **NotificationItem** - Single notification display
-
----
-
-## 🎯 Features Breakdown
-
-### Authentication Flow
-- Login/Signup with form validation
-- JWT token stored in localStorage
-- Protected routes (redirect to login if not authenticated)
-- Logout functionality
-
-### Post Features
-- Create posts with text and hashtags
-- View posts in chronological feed
-- Like/unlike posts with count
-- Comment on posts
-- Delete own posts
-- Hashtag tagging and display
-
-### User Interactions
-- View user profiles
-- Follow/unfollow users
-- See follower/following counts
-- Send direct messages
-- View message conversations
-
-### Notifications
-- Like notifications
-- Comment notifications  
-- Follow notifications
-- Filter by all/unread/read
-- Mark as read functionality
-
----
-
-## 🧪 Available Scripts
+### Clone the Repository
 
 ```bash
-# Start development server (runs on port 5173)
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-
-# Lint code
-npm run lint
+git clone https://github.com/yourusername/pulse.git
+cd pulse
 ```
 
----
+### Backend Setup
 
-## 🎓 Code Structure Highlights
+1. Create and activate a virtual environment:
 
-### Simple & Clean Code
-- Each component is self-contained
-- Clear prop definitions
-- Easy-to-read JSX with Tailwind classes
-- Well-commented for understanding
-- No complex state management
-
-### Best Practices
-- Component reusability
-- Proper file organization
-- Consistent naming conventions
-- Responsive design patterns
-- Modern React hooks usage
-
----
-
-## 📸 Screenshots
-<img width="1920" height="1080" alt="Screenshot 2025-12-13 192102" src="https://github.com/user-attachments/assets/ab1dbd56-7341-4903-aef2-6e3a8cd640ee" />
-<img width="1920" height="1080" alt="Screenshot 2025-12-13 192102" src="https://github.com/user-attachments/assets/286995f9-d767-42b9-a328-410117a2b422" />
-
----
-
-## 🐛 Troubleshooting
-
-### Port already in use
 ```bash
-# Kill process on port 5173
-npx kill-port 5173
+cd backend
+python -m venv venv
+
+# Windows
+venv\Scripts\activate
+
+# macOS/Linux
+source venv/bin/activate
 ```
 
-### Dependencies not installing
+2. Install Python dependencies:
+
 ```bash
-rm -rf node_modules package-lock.json
+pip install -r requirements.txt
+```
+
+3. Create the `.env` file with required environment variables (see below)
+
+4. Initialize the database:
+
+```bash
+python create_tables.py
+```
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+
+```bash
+cd frontend
+```
+
+2. Install Node.js dependencies:
+
+```bash
 npm install
 ```
 
-### Tailwind styles not working
-- Verify `tailwind.config.js` exists
-- Check `index.css` has `@tailwind` directives
-- Restart dev server
+---
 
-### Page not loading
-- Check browser console for errors
-- Ensure all files are in correct locations
-- Verify all imports are correct
+## Environment Variables
+
+### Backend (.env)
+
+Create a `.env` file in the `backend/` directory:
+
+```env
+# Database Configuration
+DATABASE_URL=postgresql://username:password@localhost:5432/pulse_db
+
+# JWT Configuration
+SECRET_KEY=your-secret-key-here-make-it-long-and-random
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+# CORS Configuration
+CORS_ORIGINS=http://localhost:5173
+
+# Application Settings
+APP_NAME=Pulse Social Media API
+APP_VERSION=1.0.0
+DEBUG=True
+```
+
+### Environment Variable Descriptions
+
+| Variable | Description |
+|----------|-------------|
+| `DATABASE_URL` | PostgreSQL connection string |
+| `SECRET_KEY` | Secret key for JWT token signing |
+| `ALGORITHM` | JWT signing algorithm (default: HS256) |
+| `ACCESS_TOKEN_EXPIRE_MINUTES` | Token expiration time in minutes |
+| `CORS_ORIGINS` | Allowed frontend origins (comma-separated) |
+| `DEBUG` | Enable debug mode for development |
 
 ---
 
-## 🔜 Future Enhancements
+## Running the Application
 
-- [ ] Backend API integration with FastAPI
-- [ ] Real-time updates with WebSockets
-- [ ] Image/video upload functionality
-- [ ] Search users and posts
-- [ ] Hashtag pages with filtered posts
-- [ ] User settings page
-- [ ] Dark/Light theme toggle
-- [ ] Email notifications
-- [ ] Post bookmarking
-- [ ] Share posts functionality
+### Start the Backend Server
 
----
+```bash
+cd backend
+uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+```
 
-## 👥 Team
+The backend API will be available at `http://localhost:8000`
 
-- **Muhammad Abdullah** - Frontend Development
+API documentation is auto-generated at:
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
 
----
+### Start the Frontend Development Server
 
-## 📄 License
+```bash
+cd frontend
+npm run dev
+```
 
-This project is created for educational purposes as part of **CSC336 - Web Technologies** course.
+The frontend application will be available at `http://localhost:5173`
 
----
+### Production Build
 
-## 🙏 Acknowledgments
-
-- **Font:** [Google Fonts - Poppins](https://fonts.google.com/specimen/Poppins)
-- **Icons:** [Lucide React](https://lucide.dev/)
-- **CSS Framework:** [Tailwind CSS](https://tailwindcss.com/)
-- **Build Tool:** [Vite](https://vitejs.dev/)
-- **Inspiration:** Modern social media platforms (Twitter, Instagram, Facebook)
+```bash
+cd frontend
+npm run build
+npm run preview
+```
 
 ---
 
-## 📞 Contact
+## Key Functional Workflows
 
-For any queries or suggestions, feel free to reach out!
+### User Signup/Login Flow
+
+1. User navigates to login page
+2. User enters credentials (username/password) or registration details
+3. Frontend sends POST request to `/auth/login` or `/auth/register`
+4. Backend validates credentials and returns JWT token with user data
+5. Frontend stores token in localStorage
+6. Frontend redirects user to home page
+7. All subsequent API requests include the token in Authorization header
+
+### Creating a Post
+
+1. User clicks "Create Post" button
+2. Modal opens with text input and media upload option
+3. If media is attached, image is uploaded via `/upload/image` endpoint
+4. Post data (text, hashtags, media URL) is sent to `/posts/` endpoint
+5. Backend creates post record and returns post data
+6. Frontend refreshes post feed to show new content
+
+### Following a User
+
+1. User views another user's profile or user card
+2. User clicks "Follow" button
+3. Frontend checks current follow status via `/follows/check/{userId}`
+4. Frontend sends POST to `/follows/` (follow) or DELETE to `/follows/{userId}` (unfollow)
+5. Backend creates/removes follow record in database
+6. Frontend updates UI and refreshes user statistics
+
+### Messaging Flow
+
+1. User navigates to Messages page
+2. Frontend fetches conversations via `/messages/conversations`
+3. User selects a conversation
+4. Frontend fetches message history via `/messages/conversation/{userId}`
+5. User types and sends message
+6. Frontend sends POST to `/messages/` with receiver_id and content
+7. Message appears in conversation view
+
+### Profile Update Flow
+
+1. User navigates to Settings page
+2. User modifies profile fields (username, email, bio)
+3. User clicks "Save Changes"
+4. Frontend sends PUT request to `/users/me`
+5. Backend validates and updates user record
+6. Frontend updates local state and localStorage with new user data
 
 ---
 
-**Built with ❤️ using React, Vite & Tailwind CSS**
+## API Documentation
 
-**Course:** CSC336 - Web Technologies  
-**Semester:** Fall 2025  
-**Institution:** COMSATS University Islamabad
+The backend provides a comprehensive REST API. Full documentation is available at `/docs` when running the server.
+
+### Core Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/auth/register` | Register new user |
+| POST | `/auth/login` | Authenticate user |
+| GET | `/users/me` | Get current user |
+| GET | `/users/{id}` | Get user profile |
+| PUT | `/users/me` | Update current user |
+| GET | `/posts/` | Get posts feed |
+| POST | `/posts/` | Create new post |
+| DELETE | `/posts/{id}` | Delete post |
+| POST | `/follows/` | Follow user |
+| DELETE | `/follows/{id}` | Unfollow user |
+| GET | `/messages/conversations` | Get conversations |
+| POST | `/messages/` | Send message |
+| GET | `/notifications/` | Get notifications |
+| POST | `/upload/image` | Upload image file |
+
+---
+
+## Known Challenges and Solutions
+
+### Challenge 1: Data Not Persisting After Page Refresh
+
+**Problem**: User data and statistics were lost when the page was refreshed.
+
+**Cause**: The application relied too heavily on client-side state without proper synchronization with the backend.
+
+**Solution**: Implemented a data fetching strategy where components fetch fresh data from the backend on mount. The `getCurrentUser` function now fetches user data with statistics from the server rather than relying solely on localStorage.
+
+### Challenge 2: Follow/Unfollow Not Reflecting in UI
+
+**Problem**: Following or unfollowing a user did not update the follower counts immediately.
+
+**Cause**: The frontend was not refreshing user statistics after follow actions.
+
+**Solution**: Added a `refreshUserStats` callback that is passed to components and called after follow/unfollow actions to update the sidebar and profile statistics.
+
+### Challenge 3: Authentication Token Issues (401 Errors)
+
+**Problem**: API requests were failing with 401 Unauthorized errors intermittently.
+
+**Cause**: Token was not being properly attached to requests, or tokens were expiring without proper handling.
+
+**Solution**:
+- Implemented axios interceptors to automatically attach tokens to all requests
+- Added proper error handling in the response interceptor
+- Ensured tokens are stored immediately after login and cleared on logout
+
+### Challenge 4: Image Upload Not Working
+
+**Problem**: Media upload showed "coming soon" and images could not be attached to posts.
+
+**Cause**: The upload endpoint and frontend integration were not implemented.
+
+**Solution**:
+- Created `/upload/image` endpoint in the backend
+- Implemented `uploadImage` function in the frontend API service
+- Added multipart/form-data handling for file uploads
+- Configured static file serving for uploaded images
+
+### Challenge 5: API Response Format Inconsistency
+
+**Problem**: Frontend components crashed due to unexpected API response formats.
+
+**Cause**: Backend responses used different field names (e.g., `is_following` vs `isFollowing`).
+
+**Solution**: Standardized API response formats and added fallback handling in the frontend to accept both naming conventions where necessary.
+
+---
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. Commit your changes (`git commit -m 'Add new feature'`)
+4. Push to the branch (`git push origin feature/new-feature`)
+5. Open a Pull Request
+
+### Code Standards
+
+- Frontend: Follow React best practices and ESLint configuration
+- Backend: Follow PEP 8 style guide for Python code
+- Commit messages: Use conventional commit format
+- Documentation: Update relevant README files for significant changes
+
+---
+
+## License
+
+This project is licensed under the MIT License. See the LICENSE file for details.
+
+---
+
+## Support
+
+For issues and feature requests, please open an issue on GitHub.
+
+For detailed technical documentation, see:
+- [Frontend README](./frontend/README.md)
+- [Backend README](./backend/README.md)
