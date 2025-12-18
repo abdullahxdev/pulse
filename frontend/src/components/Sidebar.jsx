@@ -18,42 +18,42 @@ const Sidebar = ({ user }) => {
 
   return (
     <aside className="fixed left-0 top-[60px] bottom-0 w-[250px] bg-dark-card border-r border-dark-border overflow-y-auto z-[90] scrollbar-custom">
-      <div className="p-6 flex flex-col gap-6">
+      <div className="p-5 flex flex-col gap-6">
         {/* User Profile Card */}
-        <div className="bg-gradient-to-br from-dark-card to-dark-bg border border-dark-border rounded-xl p-5 text-center">
-          <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-bold text-3xl mx-auto mb-4 border-[3px] border-dark-border">
+        <div className="bg-dark-bg border border-dark-border rounded-xl p-5 text-center">
+          <div className="w-16 h-16 rounded-full bg-neutral-700 flex items-center justify-center text-neutral-50 font-medium text-2xl mx-auto mb-4">
             {user?.username?.charAt(0).toUpperCase()}
           </div>
-          
+
           <div className="mb-4">
-            <h3 className="text-lg font-semibold text-slate-50 mb-1">
+            <h3 className="text-base font-medium text-neutral-50 mb-1">
               {user?.username}
             </h3>
-            <p className="text-xs text-slate-400">{user?.email}</p>
+            <p className="text-xs text-neutral-500">{user?.email}</p>
           </div>
 
           <div className="flex justify-around pt-4 border-t border-dark-border">
             <div className="flex flex-col items-center gap-1">
-              <span className="text-base font-semibold text-primary">
+              <span className="text-sm font-medium text-neutral-50">
                 {user?.posts_count || 0}
               </span>
-              <span className="text-[11px] text-slate-500 uppercase tracking-wide">
+              <span className="text-[10px] text-neutral-500 uppercase tracking-wide">
                 Posts
               </span>
             </div>
             <div className="flex flex-col items-center gap-1">
-              <span className="text-base font-semibold text-primary">
+              <span className="text-sm font-medium text-neutral-50">
                 {user?.followers_count || 0}
               </span>
-              <span className="text-[11px] text-slate-500 uppercase tracking-wide">
+              <span className="text-[10px] text-neutral-500 uppercase tracking-wide">
                 Followers
               </span>
             </div>
             <div className="flex flex-col items-center gap-1">
-              <span className="text-base font-semibold text-primary">
+              <span className="text-sm font-medium text-neutral-50">
                 {user?.following_count || 0}
               </span>
-              <span className="text-[11px] text-slate-500 uppercase tracking-wide">
+              <span className="text-[10px] text-neutral-500 uppercase tracking-wide">
                 Following
               </span>
             </div>
@@ -65,15 +65,15 @@ const Sidebar = ({ user }) => {
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
-            
+
             return (
               <Link
                 key={item.path}
                 to={item.path}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all ${
-                  isActive 
-                    ? 'bg-primary text-white' 
-                    : 'text-slate-400 hover:bg-dark-border hover:text-slate-50'
+                  isActive
+                    ? 'bg-neutral-50 text-neutral-900'
+                    : 'text-neutral-400 hover:bg-dark-hover hover:text-neutral-50'
                 }`}
               >
                 <Icon size={20} />
@@ -85,8 +85,7 @@ const Sidebar = ({ user }) => {
 
         {/* Footer */}
         <div className="mt-auto pt-4 border-t border-dark-border text-center">
-          <p className="text-xs text-slate-500 mb-1">© 2025 Pulse</p>
-          <p className="text-[11px] text-slate-600">Made with 💙</p>
+          <p className="text-xs text-neutral-600">Pulse</p>
         </div>
       </div>
     </aside>

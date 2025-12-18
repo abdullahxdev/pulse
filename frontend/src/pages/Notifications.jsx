@@ -27,8 +27,8 @@ const Notifications = () => {
   const handleMarkAsRead = async (notificationId) => {
     try {
       await markNotificationAsRead(notificationId);
-      setNotifications(notifications.map(n => 
-        n.notification_id === notificationId 
+      setNotifications(notifications.map(n =>
+        n.notification_id === notificationId
           ? { ...n, is_read: 1 }
           : n
       ));
@@ -57,7 +57,7 @@ const Notifications = () => {
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-60px)] bg-dark-bg flex items-center justify-center">
-        <div className="text-slate-500 text-sm">Loading notifications...</div>
+        <div className="text-neutral-500 text-sm">Loading notifications...</div>
       </div>
     );
   }
@@ -65,15 +65,15 @@ const Notifications = () => {
   return (
     <div className="min-h-[calc(100vh-60px)] bg-dark-bg">
       <div className="max-w-[700px] mx-auto">
-        
+
         {/* Header */}
         <div className="bg-dark-card border border-dark-border rounded-xl p-6 mb-4">
           <div className="flex justify-between items-center mb-5">
-            <h1 className="text-[28px] font-bold text-slate-50">Notifications</h1>
+            <h1 className="text-[28px] font-bold text-neutral-50">Notifications</h1>
             {unreadCount > 0 && (
-              <button 
+              <button
                 onClick={handleMarkAllAsRead}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-dark-border text-slate-50 text-xs font-medium rounded-lg hover:bg-dark-hover transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-dark-border text-neutral-50 text-xs font-medium rounded-lg hover:bg-dark-hover transition-colors"
               >
                 <CheckCheck size={16} />
                 Mark all as read
@@ -92,9 +92,9 @@ const Notifications = () => {
                 key={tab.key}
                 onClick={() => setFilter(tab.key)}
                 className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${
-                  filter === tab.key 
-                    ? 'bg-primary text-white border border-primary' 
-                    : 'border border-dark-border text-slate-400 hover:bg-dark-border hover:text-slate-50 hover:border-dark-hover'
+                  filter === tab.key
+                    ? 'bg-neutral-50 text-neutral-900 border border-neutral-50'
+                    : 'border border-dark-border text-neutral-400 hover:bg-dark-border hover:text-neutral-50 hover:border-dark-hover'
                 }`}
               >
                 {tab.label}
@@ -107,10 +107,10 @@ const Notifications = () => {
         <div className="flex flex-col">
           {filteredNotifications.length === 0 ? (
             <div className="bg-dark-card border border-dark-border rounded-xl p-[60px_24px] text-center">
-              <h3 className="text-xl text-slate-50 mb-2">No notifications</h3>
-              <p className="text-slate-400">
-                {filter === 'unread' 
-                  ? "You're all caught up!" 
+              <h3 className="text-xl text-neutral-50 mb-2">No notifications</h3>
+              <p className="text-neutral-400">
+                {filter === 'unread'
+                  ? "You're all caught up!"
                   : filter === 'read'
                   ? 'No read notifications'
                   : 'You have no notifications yet'}

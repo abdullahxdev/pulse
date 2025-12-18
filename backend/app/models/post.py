@@ -18,3 +18,4 @@ class Post(Base):
     comments = relationship("Comment", back_populates="post", cascade="all, delete-orphan")
     likes = relationship("Like", back_populates="post", cascade="all, delete-orphan")
     post_hashtags = relationship("PostHashtag", back_populates="post", cascade="all, delete-orphan")
+    saved_by = relationship("SavedPost", back_populates="post", cascade="all, delete-orphan")

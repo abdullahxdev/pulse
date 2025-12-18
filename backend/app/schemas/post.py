@@ -26,17 +26,19 @@ class PostResponse(PostBase):
     post_id: int
     user_id: int
     username: str  # From join with User table
+    user_profile_picture: Optional[str] = None
     created_at: datetime
     updated_at: Optional[datetime] = None
-    
+
     # Engagement metrics
     likes_count: int = 0
     comments_count: int = 0
     is_liked: bool = False  # Whether current user liked this post
-    
+    is_saved: bool = False  # Whether current user saved this post
+
     # Hashtags
     hashtags: List[str] = []
-    
+
     class Config:
         from_attributes = True
 

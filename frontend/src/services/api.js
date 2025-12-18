@@ -15,8 +15,13 @@ const api = axios.create({
 // Add JWT token to requests automatically
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
+  console.log('🔑 Interceptor - Token from localStorage:', token ? `${token.substring(0, 20)}...` : 'NO TOKEN');
+  console.log('🔑 Interceptor - Request URL:', config.url);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    console.log('🔑 Interceptor - Auth header set:', config.headers.Authorization.substring(0, 30) + '...');
+  } else {
+    console.warn('⚠️ No token found in localStorage!');
   }
   return config;
 });
@@ -102,6 +107,25 @@ export const logout = async () => {
   return { success: true };
 };
 
+// Debug function to test token verification
+export const debugToken = async () => {
+  try {
+    const token = localStorage.getItem('token');
+    console.log('🔍 DEBUG - Token from localStorage:', token ? `${token.substring(0, 50)}...` : 'NO TOKEN');
+
+    if (!token) {
+      return { valid: false, error: 'No token in localStorage' };
+    }
+
+    const response = await api.post('/auth/debug-token', { token });
+    console.log('🔍 DEBUG - Server response:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('🔍 DEBUG - Error:', error.response?.data || error.message);
+    return { valid: false, error: error.response?.data?.detail || error.message };
+  }
+};
+
 // ============================================
 // USER API CALLS
 // ============================================
@@ -184,6 +208,37 @@ export const searchUsers = async (query) => {
   } catch (error) {
     console.error('Error searching users:', error);
     return [];
+  }
+};
+
+// ============================================
+// FILE UPLOAD API CALLS
+// ============================================
+
+export const uploadImage = async (file) => {
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const token = localStorage.getItem('token');
+    const response = await axios.post(`${API_BASE_URL}/upload/image`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    return {
+      success: true,
+      url: response.data.url,
+      filename: response.data.filename
+    };
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    return {
+      success: false,
+      message: error.response?.data?.detail || 'Failed to upload image'
+    };
   }
 };
 
@@ -315,7 +370,7 @@ export const followUser = async (userId) => {
   try {
     // Check if already following
     const checkResponse = await api.get(`/follows/check/${userId}`);
-    
+
     if (checkResponse.data.is_following) {
       // Unfollow
       await api.delete(`/follows/${userId}`);
@@ -328,6 +383,16 @@ export const followUser = async (userId) => {
   } catch (error) {
     console.error('Error toggling follow:', error);
     return { success: false };
+  }
+};
+
+export const checkFollowStatus = async (userId) => {
+  try {
+    const response = await api.get(`/follows/check/${userId}`);
+    return response.data.is_following;
+  } catch (error) {
+    console.error('Error checking follow status:', error);
+    return false;
   }
 };
 
@@ -487,6 +552,46 @@ export const searchPosts = async (hashtag) => {
   } catch (error) {
     console.error('Error searching posts:', error);
     return [];
+  }
+};
+
+// ============================================
+// SAVED POSTS API CALLS
+// ============================================
+
+export const getSavedPosts = async () => {
+  try {
+    const response = await api.get('/saved/');
+    return response.data.map(post => ({
+      ...post,
+      created_at: formatTimeAgo(post.created_at),
+    }));
+  } catch (error) {
+    console.error('Error getting saved posts:', error);
+    return [];
+  }
+};
+
+export const savePost = async (postId) => {
+  try {
+    const response = await api.post(`/saved/toggle/${postId}`);
+    return {
+      success: true,
+      is_saved: response.data.is_saved,
+    };
+  } catch (error) {
+    console.error('Error toggling save:', error);
+    return { success: false };
+  }
+};
+
+export const checkSavedStatus = async (postId) => {
+  try {
+    const response = await api.get(`/saved/check/${postId}`);
+    return response.data.is_saved;
+  } catch (error) {
+    console.error('Error checking saved status:', error);
+    return false;
   }
 };
 
