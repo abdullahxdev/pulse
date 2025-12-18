@@ -30,3 +30,4 @@ class User(Base):
     following = relationship("Follow", foreign_keys="Follow.follower_id", back_populates="follower", cascade="all, delete-orphan")
     stories = relationship("Story", back_populates="user", cascade="all, delete-orphan")
     notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    saved_posts = relationship("SavedPost", back_populates="user", cascade="all, delete-orphan")

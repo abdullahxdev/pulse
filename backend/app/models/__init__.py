@@ -8,10 +8,11 @@ from .notification import Notification
 from .story import Story
 from .hashtag import Hashtag
 from .post_hashtag import PostHashtag
+from .saved_post import SavedPost
 
 __all__ = [
     "User",
-    "Post", 
+    "Post",
     "Comment",
     "Like",
     "Follow",
@@ -19,5 +20,6 @@ __all__ = [
     "Notification",
     "Story",
     "Hashtag",
-    "PostHashtag"
+    "PostHashtag",
+    "SavedPost"
 ]

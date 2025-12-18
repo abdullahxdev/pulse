@@ -1,7 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from .config import settings
 from .database import engine, Base
+import os
 
 # Import all routers
 from .routers import (
@@ -14,7 +16,9 @@ from .routers import (
     messages_router,
     notifications_router,
     stories_router,
-    hashtags_router
+    hashtags_router,
+    saved_posts_router,
+    uploads_router
 )
 
 # Create database tables
@@ -63,6 +67,13 @@ app.include_router(messages_router, prefix="/messages", tags=["Messages"])
 app.include_router(notifications_router, prefix="/notifications", tags=["Notifications"])
 app.include_router(stories_router, prefix="/stories", tags=["Stories"])
 app.include_router(hashtags_router, prefix="/hashtags", tags=["Hashtags"])
+app.include_router(saved_posts_router, prefix="/saved", tags=["Saved Posts"])
+app.include_router(uploads_router, prefix="/upload", tags=["File Uploads"])
+
+# Mount static files directory for uploaded images
+UPLOAD_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "uploads")
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 if __name__ == "__main__":
     import uvicorn

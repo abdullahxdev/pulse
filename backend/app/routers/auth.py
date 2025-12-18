@@ -44,9 +44,9 @@ def register(user_data: UserCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(new_user)
     
-    # Create access token
+    # Create access token (sub must be a string per JWT spec)
     access_token = create_access_token(
-        data={"sub": new_user.user_id},
+        data={"sub": str(new_user.user_id)},
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
     
@@ -63,22 +63,53 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     """
     # Find user by username
     user = db.query(User).filter(User.username == credentials.username).first()
-    
+
     if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    
-    # Create access token
+
+    # Create access token (sub must be a string per JWT spec)
     access_token = create_access_token(
-        data={"sub": user.user_id},
+        data={"sub": str(user.user_id)},
         expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     )
-    
+
+    print(f"🎫 LOGIN - Created token for user {user.username} (ID: {user.user_id})")
+    print(f"🎫 LOGIN - Token starts with: {access_token[:50]}...")
+
     return {
         "access_token": access_token,
         "token_type": "bearer",
         "user": user
     }
+
+@router.post("/debug-token")
+def debug_token(request_body: dict):
+    """
+    Debug endpoint to test token verification.
+    Pass {"token": "your-token-here"} in the request body.
+    """
+    from ..utils.auth import verify_token
+
+    token = request_body.get("token", "")
+    print(f"🔍 DEBUG - Testing token: {token[:50] if token else 'NO TOKEN'}...")
+
+    if not token:
+        return {"valid": False, "error": "No token provided"}
+
+    payload = verify_token(token)
+
+    if payload:
+        return {
+            "valid": True,
+            "payload": payload,
+            "user_id": payload.get("sub")
+        }
+    else:
+        return {
+            "valid": False,
+            "error": "Token verification failed"
+        }

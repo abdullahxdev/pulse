@@ -43,11 +43,11 @@ const Trending = ({ currentUser }) => {
   };
 
   const trendingTopics = [
-    { topic: 'Web Development', posts: 2453, trend: '+25%', icon: '💻' },
-    { topic: 'Artificial Intelligence', posts: 1876, trend: '+42%', icon: '🤖' },
-    { topic: 'Design Systems', posts: 1234, trend: '+18%', icon: '🎨' },
-    { topic: 'React Hooks', posts: 987, trend: '+15%', icon: '⚛️' },
-    { topic: 'Tailwind CSS', posts: 856, trend: '+32%', icon: '🎭' }
+    { topic: 'Web Development', posts: 2453, trend: '+25%' },
+    { topic: 'Artificial Intelligence', posts: 1876, trend: '+42%' },
+    { topic: 'Design Systems', posts: 1234, trend: '+18%' },
+    { topic: 'React Hooks', posts: 987, trend: '+15%' },
+    { topic: 'Tailwind CSS', posts: 856, trend: '+32%' }
   ];
 
   const topCreators = [
@@ -59,7 +59,7 @@ const Trending = ({ currentUser }) => {
   if (loading) {
     return (
       <div className="min-h-[calc(100vh-60px)] bg-dark-bg flex items-center justify-center">
-        <div className="text-slate-500 text-sm">Loading trending...</div>
+        <div className="text-neutral-500 text-sm">Loading trending...</div>
       </div>
     );
   }
@@ -67,15 +67,15 @@ const Trending = ({ currentUser }) => {
   return (
     <div className="min-h-[calc(100vh-60px)] bg-dark-bg">
       <div className="max-w-[1200px] mx-auto">
-        
+
         {/* Header */}
         <div className="bg-dark-card border border-dark-border rounded-xl p-6 mb-4">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <Flame size={28} className="text-orange-500" />
-              <h1 className="text-[28px] font-bold text-slate-50">Trending</h1>
+              <Flame size={28} className="text-neutral-400" />
+              <h1 className="text-[28px] font-bold text-neutral-50">Trending</h1>
             </div>
-            <div className="flex items-center gap-2 text-sm text-slate-400">
+            <div className="flex items-center gap-2 text-sm text-neutral-400">
               <TrendingUp size={18} className="text-green-500" />
               <span>Updated 5 minutes ago</span>
             </div>
@@ -95,8 +95,8 @@ const Trending = ({ currentUser }) => {
                   onClick={() => setActiveFilter(filter.key)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                     activeFilter === filter.key
-                      ? 'bg-primary text-white'
-                      : 'text-slate-400 hover:bg-dark-border hover:text-slate-50'
+                      ? 'bg-neutral-50 text-neutral-900'
+                      : 'text-neutral-400 hover:bg-dark-border hover:text-neutral-50'
                   }`}
                 >
                   <Icon size={18} />
@@ -109,22 +109,22 @@ const Trending = ({ currentUser }) => {
 
         {/* Content Grid */}
         <div className="grid lg:grid-cols-[1fr_350px] gap-4">
-          
+
           {/* Trending Posts */}
           <div className="flex flex-col">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-slate-50">
-                🔥 Hot Posts Right Now
+              <h2 className="text-xl font-semibold text-neutral-50">
+                Hot Posts Right Now
               </h2>
-              <span className="text-sm text-slate-400">
+              <span className="text-sm text-neutral-400">
                 {posts.length} trending posts
               </span>
             </div>
 
             {posts.length === 0 ? (
               <div className="bg-dark-card border border-dark-border rounded-xl p-[60px_24px] text-center">
-                <h3 className="text-xl text-slate-50 mb-2">No trending posts</h3>
-                <p className="text-slate-400">Check back later for trending content</p>
+                <h3 className="text-xl text-neutral-50 mb-2">No trending posts</h3>
+                <p className="text-neutral-400">Check back later for trending content</p>
               </div>
             ) : (
               posts.map(post => (
@@ -141,11 +141,11 @@ const Trending = ({ currentUser }) => {
 
           {/* Right Sidebar */}
           <div className="hidden lg:block space-y-4">
-            
+
             {/* Trending Topics */}
             <div className="bg-dark-card border border-dark-border rounded-xl p-4 sticky top-[84px]">
-              <h3 className="text-base font-semibold text-slate-50 mb-4 flex items-center gap-2">
-                <TrendingUp size={20} className="text-primary" />
+              <h3 className="text-base font-semibold text-neutral-50 mb-4 flex items-center gap-2">
+                <TrendingUp size={20} className="text-neutral-400" />
                 Trending Topics
               </h3>
               <div className="flex flex-col gap-3">
@@ -155,12 +155,14 @@ const Trending = ({ currentUser }) => {
                     className="flex items-center justify-between p-3 bg-dark-bg rounded-lg hover:bg-dark-border transition-all cursor-pointer"
                   >
                     <div className="flex items-center gap-3">
-                      <span className="text-2xl">{topic.icon}</span>
+                      <div className="w-10 h-10 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400 font-medium text-sm">
+                        {index + 1}
+                      </div>
                       <div>
-                        <h4 className="text-sm font-medium text-slate-50">
+                        <h4 className="text-sm font-medium text-neutral-50">
                           {topic.topic}
                         </h4>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-neutral-500">
                           {topic.posts} posts
                         </p>
                       </div>
@@ -175,8 +177,8 @@ const Trending = ({ currentUser }) => {
 
             {/* Top Creators */}
             <div className="bg-dark-card border border-dark-border rounded-xl p-4">
-              <h3 className="text-base font-semibold text-slate-50 mb-4 flex items-center gap-2">
-                <Award size={20} className="text-yellow-500" />
+              <h3 className="text-base font-semibold text-neutral-50 mb-4 flex items-center gap-2">
+                <Award size={20} className="text-neutral-400" />
                 Top Creators
               </h3>
               <div className="flex flex-col gap-3">
@@ -187,19 +189,19 @@ const Trending = ({ currentUser }) => {
                   >
                     <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
                       creator.rank === 1 ? 'bg-yellow-500 text-white' :
-                      creator.rank === 2 ? 'bg-slate-400 text-white' :
+                      creator.rank === 2 ? 'bg-neutral-400 text-white' :
                       'bg-orange-600 text-white'
                     }`}>
                       {creator.rank}
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-500 flex items-center justify-center text-white font-semibold">
+                    <div className="w-10 h-10 rounded-full bg-neutral-700 flex items-center justify-center text-neutral-50 font-semibold">
                       {creator.username.charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
-                      <h4 className="text-sm font-medium text-slate-50">
+                      <h4 className="text-sm font-medium text-neutral-50">
                         {creator.username}
                       </h4>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-neutral-500">
                         {creator.posts} posts • {creator.likes} likes
                       </p>
                     </div>

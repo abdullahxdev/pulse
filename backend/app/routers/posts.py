@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from ..database import get_db
-from ..models import Post, User, Like, Comment, Hashtag, PostHashtag
+from ..models import Post, User, Like, Comment, Hashtag, PostHashtag, SavedPost
 from ..schemas.post import PostCreate, PostResponse, PostUpdate
 from ..utils.dependencies import get_current_user
 
@@ -14,27 +14,33 @@ def build_post_response(post: Post, current_user_id: Optional[int], db: Session)
     """
     # Get user info
     user = db.query(User).filter(User.user_id == post.user_id).first()
-    
+
     # Get likes count
     likes_count = db.query(Like).filter(Like.post_id == post.post_id).count()
-    
+
     # Get comments count
     comments_count = db.query(Comment).filter(Comment.post_id == post.post_id).count()
-    
+
     # Check if current user liked this post
     is_liked = False
+    is_saved = False
     if current_user_id:
         is_liked = db.query(Like).filter(
             Like.post_id == post.post_id,
             Like.user_id == current_user_id
         ).first() is not None
-    
+
+        is_saved = db.query(SavedPost).filter(
+            SavedPost.post_id == post.post_id,
+            SavedPost.user_id == current_user_id
+        ).first() is not None
+
     # Get hashtags
     hashtags = db.query(Hashtag).join(PostHashtag).filter(
         PostHashtag.post_id == post.post_id
     ).all()
     hashtag_names = [tag.tag_name for tag in hashtags]
-    
+
     return {
         "post_id": post.post_id,
         "user_id": post.user_id,
@@ -47,6 +53,7 @@ def build_post_response(post: Post, current_user_id: Optional[int], db: Session)
         "likes_count": likes_count,
         "comments_count": comments_count,
         "is_liked": is_liked,
+        "is_saved": is_saved,
         "hashtags": hashtag_names
     }
 
