@@ -4,7 +4,12 @@ A modern, full-stack social media web application built with React and FastAPI. 
 
 <img width="1919" height="991" alt="Screenshot 2025-12-19 003323" src="https://github.com/user-attachments/assets/7a5cb6e8-6752-49b9-bca5-762997a00c91" />
 
+
 <img width="1901" height="992" alt="Screenshot 2025-12-19 003404" src="https://github.com/user-attachments/assets/c0b9e4b5-44fb-4b1f-9f93-e79d2216f63b" />
+
+
+<img width="1900" height="991" alt="image" src="https://github.com/user-attachments/assets/f5e91f40-e0f2-4874-87f1-64963e532b6d" />
+
 
 
 ## Table of Contents
