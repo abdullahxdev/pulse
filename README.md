@@ -511,6 +511,15 @@ The backend provides a comprehensive REST API. Full documentation is available a
 
 ---
 
+## 👨‍💻 Author
+
+**Your Name**
+- GitHub: [@abdullahxdev](https://github.com/abdullahxdev)
+- LinkedIn: [Muhammad Abdullah](https://linkedin.com/in/mabdullahxdev)
+- Email: abdullahisdev@gmail.com
+
+---
+
 ## License
 
 This project is licensed under the MIT License. See the LICENSE file for details.
