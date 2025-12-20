@@ -513,7 +513,7 @@ The backend provides a comprehensive REST API. Full documentation is available a
 
 ## Author
 
-**Your Name**
+**Muhammad Abdullah**
 - GitHub: [@abdullahxdev](https://github.com/abdullahxdev)
 - LinkedIn: [Muhammad Abdullah](https://linkedin.com/in/mabdullahxdev)
 - Email: abdullahisdev@gmail.com
