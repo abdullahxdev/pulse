@@ -511,7 +511,7 @@ The backend provides a comprehensive REST API. Full documentation is available a
 
 ---
 
-## 👨‍💻 Author
+## Author
 
 **Your Name**
 - GitHub: [@abdullahxdev](https://github.com/abdullahxdev)
